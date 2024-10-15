@@ -1,0 +1,84 @@
+package com.tmkproperties.hotel.service.implementation;
+
+import com.tmkproperties.hotel.dto.RoomDto;
+import com.tmkproperties.hotel.entity.Hotel; // Assuming you have a Hotel entity
+import com.tmkproperties.hotel.entity.Room;
+import com.tmkproperties.hotel.exception.ResourceNotFoundException;
+import com.tmkproperties.hotel.repository.HotelRepository; // Assuming you have a HotelRepository
+import com.tmkproperties.hotel.repository.RoomRepository; // Assuming you have a RoomRepository
+import com.tmkproperties.hotel.service.IRoomService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+public class RoomServiceImpl implements IRoomService {
+
+    private final RoomRepository roomRepository;
+    private final HotelRepository hotelRepository;
+
+    public RoomServiceImpl(RoomRepository roomRepository, HotelRepository hotelRepository) {
+        this.roomRepository = roomRepository;
+        this.hotelRepository = hotelRepository;
+    }
+
+    @Override
+    @Transactional
+    public void createRoom(Long hotelId, RoomDto roomDto) {
+        // Fetch the hotel to associate the room with
+        Hotel hotel = hotelRepository.findById(hotelId)
+                .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: " + hotelId));
+
+        // Convert RoomDto to Room entity
+        Room room = new Room();
+        room.setHotel(hotel); // Associate the room with the hotel
+        room.setName(roomDto.getName());
+        room.setDescription(roomDto.getDescription());
+        room.setPrice(roomDto.getPrice());
+        room.setCapacity(roomDto.getCapacity());
+        room.setAmenities(roomDto.getAmenities());
+        // Add any other fields that are part of RoomDto
+
+        roomRepository.save(room);
+    }
+
+    @Override
+    public List<Room> getAllRoomsByHotelId(Long hotelId) {
+        return roomRepository.findByHotelId(hotelId);
+    }
+
+    @Override
+    public Optional<Room> getRoomById(Long hotelId, Long roomId) {
+        return roomRepository.findByIdAndHotelId(roomId, hotelId);
+    }
+
+    @Override
+    @Transactional
+    public boolean updateRoom(Long hotelId, Long roomId, RoomDto roomDto) {
+        Room room = roomRepository.findByIdAndHotelId(roomId, hotelId)
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found with ID: " + roomId));
+
+        // Update the room properties
+        room.setName(roomDto.getName());
+        room.setDescription(roomDto.getDescription());
+        room.setPrice(roomDto.getPrice());
+        room.setCapacity(roomDto.getCapacity());
+        room.setAmenities(roomDto.getAmenities());
+        // Update any other fields as necessary
+
+        roomRepository.save(room);
+        return true;
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteRoom(Long hotelId, Long roomId) {
+        Room room = roomRepository.findByIdAndHotelId(roomId, hotelId)
+                .orElseThrow(() -> new ResourceNotFoundException("Room not found with ID: " + roomId));
+
+        roomRepository.delete(room);
+        return true;
+    }
+}
