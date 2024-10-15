@@ -2,6 +2,7 @@ package com.tmkproperties.hotel.controller;
 
 import com.tmkproperties.hotel.dto.HotelDto;
 import com.tmkproperties.hotel.dto.ResponseDto;
+import com.tmkproperties.hotel.dto.RoomDto;
 import com.tmkproperties.hotel.entity.Hotel;
 import com.tmkproperties.hotel.exception.ResourceNotFoundException;
 import com.tmkproperties.hotel.service.IHotelService;
@@ -35,10 +36,32 @@ public class HotelController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Hotel>> getAllHotels() {
+    public ResponseEntity<List<HotelDto>> getAllHotels() {
         List<Hotel> hotels = hotelService.getAllHotels();
-        return ResponseEntity.status(HttpStatus.OK).body(hotels);
+
+        List<HotelDto> hotelDtos = hotels
+                .stream()
+                .map(hotel -> HotelDto
+                        .builder()
+                        .name(hotel.getName())
+                        .description(hotel.getDescription())
+                        .location(hotel.getLocation())
+                        .hotelType(hotel.getHotelType())
+                        .rooms(
+                                hotel.getRooms()
+                                        .stream()
+                                        .map(room -> RoomDto.builder()
+                                                .roomType(room.getRoomType())
+                                                .maximumNumberOfGuests(room.getMaximumNumberOfGuests())
+                                                .pricePerNight(room.getPricePerNight())
+                                                .build())
+                                        .toList())
+                        .build())
+                .toList();
+
+        return ResponseEntity.status(HttpStatus.OK).body(hotelDtos);
     }
+
 
     @GetMapping("/{slug}")
     public ResponseEntity<Hotel> getHotelBySlug(@PathVariable String slug) {

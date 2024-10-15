@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +22,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    // Handle validation errors (MethodArgumentNotValidException)
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
@@ -35,9 +37,24 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(validationErrors, HttpStatus.BAD_REQUEST);
     }
 
+    // Handle unsupported HTTP methods (HttpRequestMethodNotSupportedException)
+    @Override
+    protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
+            HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
+
+        ErrorResponseDto errorResponseDTO = new ErrorResponseDto(
+                request.getDescription(false),
+                HttpStatus.METHOD_NOT_ALLOWED,  // This should be 405 status
+                "Method not supported: " + ex.getMethod(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponseDTO, HttpStatus.METHOD_NOT_ALLOWED);
+    }
+
+    // Handle custom exceptions like HotelAlreadyExistException
     @ExceptionHandler(HotelAlreadyExistException.class)
-    public ResponseEntity<ErrorResponseDto> handleCustomerAlreadyExistsException(HotelAlreadyExistException exception,
-                                                                                 WebRequest webRequest){
+    public ResponseEntity<ErrorResponseDto> handleHotelAlreadyExistsException(HotelAlreadyExistException exception,
+                                                                              WebRequest webRequest) {
         ErrorResponseDto errorResponseDTO = new ErrorResponseDto(
                 webRequest.getDescription(false),
                 HttpStatus.BAD_REQUEST,
@@ -47,9 +64,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
     }
 
+    // Handle resource not found exceptions
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(ResourceNotFoundException exception,
-                                                                             WebRequest webRequest){
+                                                                            WebRequest webRequest) {
         ErrorResponseDto errorResponseDTO = new ErrorResponseDto(
                 webRequest.getDescription(false),
                 HttpStatus.NOT_FOUND,
@@ -58,6 +76,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.NOT_FOUND);
     }
-
-
 }

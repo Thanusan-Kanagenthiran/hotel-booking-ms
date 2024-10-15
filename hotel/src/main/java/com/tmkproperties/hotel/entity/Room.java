@@ -1,19 +1,16 @@
 package com.tmkproperties.hotel.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tmkproperties.hotel.constants.RoomType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Entity
-@Getter
+@Getter @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class Room extends BaseEntity {
 
     @Id
@@ -30,6 +27,7 @@ public class Room extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "hotel_id")
+    @JsonIgnore
     private Hotel hotel;
 
 }

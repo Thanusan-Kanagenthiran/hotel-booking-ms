@@ -20,4 +20,6 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
 
     Optional<Hotel> findBySlug(String slug);
 
+
+    List<Hotel> findByHotelId(Long hotelId);
 }

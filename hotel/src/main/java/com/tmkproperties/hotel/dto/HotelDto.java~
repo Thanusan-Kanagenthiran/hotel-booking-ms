@@ -8,16 +8,12 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class HotelDto {
 
     @Enumerated(EnumType.STRING)
@@ -42,7 +38,5 @@ public class HotelDto {
     @Email(message = "Invalid email format")
     @NotEmpty(message = "Email cannot be empty")
     private String email;
-
-    private List<RoomDto> rooms;
 
 }
