@@ -1,7 +1,6 @@
 package com.tmkproperties.hotel.service;
 
 import com.tmkproperties.hotel.dto.*;
-import com.tmkproperties.hotel.entity.Room;
 import jakarta.validation.Valid;
 
 import java.util.List;

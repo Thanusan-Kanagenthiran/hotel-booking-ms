@@ -1,13 +1,11 @@
 package com.tmkproperties.hotel.service.implementation;
 
-import com.tmkproperties.hotel.dto.HotelResponseDto;
 import com.tmkproperties.hotel.dto.RoomRequestDto;
 import com.tmkproperties.hotel.dto.RoomResponseDto;
 import com.tmkproperties.hotel.entity.Hotel;
 import com.tmkproperties.hotel.entity.Room;
 import com.tmkproperties.hotel.exception.ResourceNotFoundException;
 import com.tmkproperties.hotel.exception.RoomNumberAlreadyExistsException;
-import com.tmkproperties.hotel.mapper.HotelMapper;
 import com.tmkproperties.hotel.mapper.RoomMapper;
 import com.tmkproperties.hotel.repository.HotelRepository;
 import com.tmkproperties.hotel.repository.RoomRepository;
