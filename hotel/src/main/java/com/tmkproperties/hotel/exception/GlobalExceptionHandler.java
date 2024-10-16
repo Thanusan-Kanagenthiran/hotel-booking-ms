@@ -22,7 +22,7 @@ import java.util.Map;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    // Handle validation errors (MethodArgumentNotValidException)
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
@@ -37,7 +37,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(validationErrors, HttpStatus.BAD_REQUEST);
     }
 
-    // Handle unsupported HTTP methods (HttpRequestMethodNotSupportedException)
+
     @Override
     protected ResponseEntity<Object> handleHttpRequestMethodNotSupported(
             HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
@@ -51,7 +51,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.METHOD_NOT_ALLOWED);
     }
 
-    // Handle custom exceptions like HotelAlreadyExistException
     @ExceptionHandler(HotelAlreadyExistException.class)
     public ResponseEntity<ErrorResponseDto> handleHotelAlreadyExistsException(HotelAlreadyExistException exception,
                                                                               WebRequest webRequest) {
@@ -64,7 +63,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
     }
 
-    // Handle resource not found exceptions
+    @ExceptionHandler(RoomNumberAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleRoomNumberAlreadyExistsException(RoomNumberAlreadyExistsException exception,
+                                                                              WebRequest webRequest) {
+        ErrorResponseDto errorResponseDTO = new ErrorResponseDto(
+                webRequest.getDescription(false),
+                HttpStatus.BAD_REQUEST,
+                exception.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponseDTO, HttpStatus.BAD_REQUEST);
+    }
+
+
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponseDto> handleResourceNotFoundException(ResourceNotFoundException exception,
                                                                             WebRequest webRequest) {

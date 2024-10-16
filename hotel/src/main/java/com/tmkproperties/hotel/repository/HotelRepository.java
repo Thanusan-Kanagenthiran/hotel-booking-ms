@@ -12,12 +12,5 @@ import java.util.Optional;
 
 @Repository
 public interface HotelRepository extends JpaRepository<Hotel, Long> {
-    boolean existsByName(String name);
-
-    boolean existsByEmail(String email);
-
-    boolean existsByPhone(String phone);
-
-    Optional<Hotel> findBySlug(String slug);
-
+    Optional<Hotel> findByNameOrPhoneOrEmail(String name,String phone, String email);
 }

@@ -1,9 +1,14 @@
 package com.tmkproperties.hotel.service.implementation;
 
-import com.tmkproperties.hotel.dto.RoomDto;
+import com.tmkproperties.hotel.dto.HotelResponseDto;
+import com.tmkproperties.hotel.dto.RoomRequestDto;
+import com.tmkproperties.hotel.dto.RoomResponseDto;
 import com.tmkproperties.hotel.entity.Hotel;
 import com.tmkproperties.hotel.entity.Room;
 import com.tmkproperties.hotel.exception.ResourceNotFoundException;
+import com.tmkproperties.hotel.exception.RoomNumberAlreadyExistsException;
+import com.tmkproperties.hotel.mapper.HotelMapper;
+import com.tmkproperties.hotel.mapper.RoomMapper;
 import com.tmkproperties.hotel.repository.HotelRepository;
 import com.tmkproperties.hotel.repository.RoomRepository;
 import com.tmkproperties.hotel.service.IRoomService;
@@ -11,30 +16,72 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
 public class RoomServiceImpl implements IRoomService {
 
-    private RoomRepository roomRepository;
-    private HotelRepository hotelRepository;
+    private final HotelRepository hotelRepository;
+    private final RoomRepository roomRepository;
 
     @Override
-    public List<Room> getAllRoomsByHotelId(Long hotelId) {
-        return roomRepository.findRoomsByHotel_HotelId(hotelId);
+    public void createRoom(RoomRequestDto roomRequestDto) {
+
+        Hotel hotel = hotelRepository.findById(roomRequestDto.getHotelId()).orElseThrow(
+                () -> new ResourceNotFoundException("Hotel not found with id: " + roomRequestDto.getHotelId())
+        );
+
+        Optional<Room> existingRoom = roomRepository.findByHotelAndRoomNumber(hotel, roomRequestDto.getRoomNumber());
+
+        if (existingRoom.isPresent()) {
+            throw new RoomNumberAlreadyExistsException("Room already exists with number: " + roomRequestDto.getRoomNumber() + " in hotel: " + hotel.getName());
+        }
+
+        Room room = RoomMapper.toRoom(roomRequestDto);
+        room.setHotel(hotel);
+        roomRepository.save(room);
+    }
+
+
+    @Override
+    public List<RoomResponseDto> findAll() {
+        List<Room> rooms = roomRepository.findAll();
+
+        if (rooms.isEmpty()) {
+            throw new ResourceNotFoundException("No rooms found.");
+        }
+        return rooms.stream()
+                .map(RoomMapper::toRoomResponseDto)
+                .collect(Collectors.toList());
+    }
+
+
+    @Override
+    public RoomResponseDto findById(Long id) {
+        Room room = roomRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Room not found with id: " + id)
+        );
+        return RoomMapper.toRoomResponseDto(room);
     }
 
     @Override
-    public void createRoom(RoomDto roomDto, Long hotelId) {
+    public void updateRoom(Long id, RoomRequestDto roomRequestDto) {
 
-        Hotel hotel = hotelRepository.findById(hotelId)
-                .orElseThrow(() -> new ResourceNotFoundException("Hotel not found with ID: " + hotelId));
+        Room room = roomRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Room not found with id: " + id)
+        );
+        Room updatedRoom = RoomMapper.toRoom(roomRequestDto);
+        updatedRoom.setId(room.getId());
+        roomRepository.save(updatedRoom);
+    }
 
-        Room room = new Room();
-        room.setHotel(hotel);
-        room.setRoomType(roomDto.getRoomType());
-        room.setMaximumNumberOfGuests(roomDto.getMaximumNumberOfGuests());
-        room.setPricePerNight(roomDto.getPricePerNight());
-        roomRepository.save(room);
+    @Override
+    public void deleteRoom(Long id) {
+        Room room = roomRepository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Room not found with id: " + id)
+        );
+        roomRepository.delete(room);
     }
 }

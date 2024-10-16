@@ -1,25 +1,22 @@
 package com.tmkproperties.hotel.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.tmkproperties.hotel.constants.HotelType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
 import java.util.List;
 
 @Entity
-@Getter @Setter @AllArgsConstructor @NoArgsConstructor
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class Hotel extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
-    private Long hotelId;
-
-    private Long ownerId;
-    private String phone;
-    private String email;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     private HotelType hotelType;
@@ -28,22 +25,13 @@ public class Hotel extends BaseEntity {
     private String location;
     private String description;
 
-    @OneToMany(mappedBy = "hotel")
+    @Column(unique = true, nullable = false)
+    private String phone;
+
+    @Column(unique = true, nullable = false)
+    private String email;
+
+    @OneToMany(mappedBy = "hotel", cascade = CascadeType.REMOVE)
     private List<Room> rooms;
-
-    @Column(nullable = false, unique = true)
-    private String slug;
-
-    public void setName(String name) {
-        this.name = name;
-        this.slug = generateSlug(name);
-    }
-
-    private String generateSlug(String name) {
-        return name.toLowerCase()
-                .replaceAll("[^a-zA-Z0-9]", "-")
-                .replaceAll("-+", "-")
-                .replaceAll("^-|-$", "");
-    }
 
 }

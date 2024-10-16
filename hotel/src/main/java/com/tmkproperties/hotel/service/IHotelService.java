@@ -1,22 +1,20 @@
 package com.tmkproperties.hotel.service;
 
-import com.tmkproperties.hotel.dto.HotelDto;
-import com.tmkproperties.hotel.entity.Hotel;
+import com.tmkproperties.hotel.dto.HotelRequestDto;
+import com.tmkproperties.hotel.dto.HotelResponseDto;
+import jakarta.validation.Valid;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface IHotelService {
 
-    void createHotel(HotelDto hotelDto);
+    void createHotel(@Valid HotelRequestDto hotelRequestDto);
 
-    List<Hotel> getAllHotels();
+    List<HotelResponseDto> findAll();
 
-    Hotel getHotelBySlug(String slug);
+    HotelResponseDto findById(Long id);
 
-    Optional<Hotel> findById(Long hotelId);
+    void updateHotel(Long id, @Valid HotelRequestDto hotelRequestDto);
 
-    boolean updateHotel(Long hotelId, HotelDto hotelDto);
-
-    boolean deleteHotel(Long hotelId);
+    void deleteHotel(Long id);
 }

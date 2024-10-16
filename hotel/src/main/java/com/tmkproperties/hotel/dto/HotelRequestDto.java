@@ -12,13 +12,11 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class HotelDto {
+public class HotelRequestDto {
 
     @Enumerated(EnumType.STRING)
     private HotelType hotelType;
@@ -42,7 +40,5 @@ public class HotelDto {
     @Email(message = "Invalid email format")
     @NotEmpty(message = "Email cannot be empty")
     private String email;
-
-    private List<RoomDto> rooms;
 
 }

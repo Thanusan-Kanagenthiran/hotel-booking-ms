@@ -1,104 +1,88 @@
 package com.tmkproperties.hotel.service.implementation;
-
-import com.tmkproperties.hotel.dto.HotelDto;
+import com.tmkproperties.hotel.dto.HotelRequestDto;
+import com.tmkproperties.hotel.dto.HotelResponseDto;
 import com.tmkproperties.hotel.entity.Hotel;
 import com.tmkproperties.hotel.exception.HotelAlreadyExistException;
 import com.tmkproperties.hotel.exception.ResourceNotFoundException;
+import com.tmkproperties.hotel.mapper.HotelMapper;
 import com.tmkproperties.hotel.repository.HotelRepository;
 import com.tmkproperties.hotel.service.IHotelService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class HotelServiceImpl implements IHotelService {
 
-    private HotelRepository hotelRepository;
+    private final HotelRepository repository;
 
     @Override
-    public void createHotel(HotelDto hotelDto) {
+    public void createHotel(HotelRequestDto hotelRequestDto) {
+        Optional<Hotel> existingHotel = repository.findByNameOrPhoneOrEmail(hotelRequestDto.getEmail(), hotelRequestDto.getPhone(), hotelRequestDto.getName());
 
-        Hotel hotel = new Hotel();
+        if (existingHotel.isPresent()) {
+            Hotel hotel = existingHotel.get();
+            String email = hotelRequestDto.getEmail();
+            String phone = hotelRequestDto.getPhone();
+            String name = hotelRequestDto.getName();
 
-        if (hotelRepository.existsByName(hotelDto.getName())) {
-            throw new HotelAlreadyExistException("Hotel with name " + hotelDto.getName() + " already exists.");
+            if (hotel.getEmail().equals(email)) {
+                throw new HotelAlreadyExistException("Hotel with email " + email + " already exists.");
+            }
+            if (hotel.getPhone().equals(phone)) {
+                throw new HotelAlreadyExistException("Hotel with phone " + phone + " already exists.");
+            }
+            if (hotel.getName().equals(name)) {
+                throw new HotelAlreadyExistException("Hotel with name " + name + " already exists.");
+            }
         }
 
-        if(hotelRepository.existsByEmail(hotelDto.getEmail())) {
-            throw new HotelAlreadyExistException("Hotel with email " + hotelDto.getEmail() + " already exists.");
-        }
-
-        if(hotelRepository.existsByPhone(hotelDto.getPhone())) {
-            throw new HotelAlreadyExistException("Hotel with phone " + hotelDto.getPhone() + " already exists.");
-        }
-
-        hotel.setHotelType(hotelDto.getHotelType());
-        hotel.setName(hotelDto.getName());
-        hotel.setLocation(hotelDto.getLocation());
-        hotel.setDescription(hotelDto.getDescription());
-        hotel.setEmail(hotelDto.getEmail());
-        hotel.setPhone(hotelDto.getPhone());
-        hotel.setOwnerId(0L);
-
-        Hotel savedHotel = hotelRepository.save(hotel);
-
+        repository.save(HotelMapper.toHotel(hotelRequestDto));
     }
 
-    public List<Hotel> getAllHotels() {
-        return hotelRepository.findAll();
-    }
 
-    public Hotel getHotelBySlug(String slug) {
-        return hotelRepository.findBySlug(slug)
-                .orElseThrow(() -> new ResourceNotFoundException("No Hotel found with this URL: " + slug));
-    }
+    @Override
+    public List<HotelResponseDto> findAll() {
+        List<Hotel> hotels = repository.findAll();
 
-    public Optional<Hotel> findById(Long hotelId) {
-        Optional<Hotel> hotelOptional = hotelRepository.findById(hotelId);
-
-        if (hotelOptional.isPresent()) {
-            return hotelOptional;
-        } else {
-            throw new ResourceNotFoundException("Hotel not found with ID: " + hotelId);
+        if (hotels.isEmpty()) {
+            throw new ResourceNotFoundException("No hotels found.");
         }
+        return hotels.stream()
+                .map(HotelMapper::toHotelResponseDto)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public boolean updateHotel(Long hotelId,HotelDto hotelDto) {
-
-        Optional<Hotel> hotelOptional = hotelRepository.findById(hotelId);
-
-        if (hotelOptional.isPresent()) {
-
-            Hotel hotel = hotelOptional.get();
-
-            hotel.setHotelType(hotelDto.getHotelType());
-            hotel.setName(hotelDto.getName());
-            hotel.setLocation(hotelDto.getLocation());
-            hotel.setDescription(hotelDto.getDescription());
-            hotel.setEmail(hotelDto.getEmail());
-            hotel.setPhone(hotelDto.getPhone());
-
-            hotelRepository.save(hotel);
-            return true;
-        } else {
-            return false;
-        }
-
+    public HotelResponseDto findById(Long id) {
+        Hotel hotel = repository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Hotel not found with id: " + id)
+        );
+        return HotelMapper.toHotelResponseDto(hotel);
     }
 
-    @Override
-    public boolean deleteHotel(Long hotelId) {
-        Optional<Hotel> hotelOptional = hotelRepository.findById(hotelId);
 
-        if (hotelOptional.isPresent()) {
-            hotelRepository.delete(hotelOptional.get());
-            return true;
-        } else {
-            return false;
-        }
+    @Override
+    public void updateHotel(Long id, HotelRequestDto hotelRequestDto) {
+        Hotel existingHotel = repository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Hotel not found with id: " + id)
+        );
+
+        Hotel updatedHotel = HotelMapper.toHotel(hotelRequestDto);
+        updatedHotel.setId(existingHotel.getId());
+        repository.save(updatedHotel);
+    }
+
+
+    @Override
+    public void deleteHotel(Long id) {
+        Hotel hotel = repository.findById(id).orElseThrow(
+                () -> new ResourceNotFoundException("Hotel not found with id: " + id)
+        );
+        repository.delete(hotel);
     }
 }

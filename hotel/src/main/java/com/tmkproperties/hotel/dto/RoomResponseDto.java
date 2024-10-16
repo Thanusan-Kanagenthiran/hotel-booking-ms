@@ -1,27 +1,21 @@
 package com.tmkproperties.hotel.dto;
 
 import com.tmkproperties.hotel.constants.RoomType;
-import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.Builder;
+import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
+@Data
 @Builder
-public class RoomDto {
-
-    @NotNull
+public class RoomResponseDto {
+    private Long id;
     private RoomType roomType;
-
-    @NotNull
+    private Integer roomNumber;
     private Integer maximumNumberOfGuests;
-
-    @NotNull
     private BigDecimal pricePerNight;
+    private List<LocalDate> unavailableDates;
 
-    @NotNull
-    private Integer roomNo;
 }
