@@ -1,13 +1,19 @@
 package com.tmkproperties.hotel.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class HotelAlreadyExistException extends RuntimeException{
+import java.util.Map;
 
-    public HotelAlreadyExistException(String message) {
-        super(message);
+@Getter
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class HotelAlreadyExistException extends RuntimeException {
+    private final Map<String, String> validationErrors;
+
+    public HotelAlreadyExistException(Map<String, String> validationErrors) {
+        super("Validation failed for hotel creation.");
+        this.validationErrors = validationErrors;
     }
 
 }

@@ -4,6 +4,7 @@ import com.tmkproperties.hotel.dto.RoomRequestDto;
 import com.tmkproperties.hotel.dto.RoomResponseDto;
 import com.tmkproperties.hotel.entity.Hotel;
 import com.tmkproperties.hotel.entity.Room;
+import com.tmkproperties.hotel.exception.BadRequestException;
 import com.tmkproperties.hotel.exception.ResourceNotFoundException;
 import com.tmkproperties.hotel.exception.RoomNumberAlreadyExistsException;
 import com.tmkproperties.hotel.mapper.RoomMapper;
@@ -67,11 +68,17 @@ public class RoomServiceImpl implements IRoomService {
     @Override
     public void updateRoom(Long id, RoomRequestDto roomRequestDto) {
 
-        Room room = roomRepository.findById(id).orElseThrow(
+        Room existingRoom = roomRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Room not found with id: " + id)
         );
+
+        if (!existingRoom.getHotel().getId().equals(roomRequestDto.getHotelId())) {
+            String errorMessage = "Cannot change hotel ID for this room. Room belongs to hotel ID: " + existingRoom.getHotel().getId();
+            throw new BadRequestException(errorMessage);
+        }
+
         Room updatedRoom = RoomMapper.toRoom(roomRequestDto);
-        updatedRoom.setId(room.getId());
+        updatedRoom.setId(existingRoom.getId());
         roomRepository.save(updatedRoom);
     }
 

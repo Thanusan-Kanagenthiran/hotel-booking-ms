@@ -10,7 +10,9 @@ import com.tmkproperties.hotel.service.IHotelService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -22,7 +24,13 @@ public class HotelServiceImpl implements IHotelService {
 
     @Override
     public void createHotel(HotelRequestDto hotelRequestDto) {
-        Optional<Hotel> existingHotel = repository.findByNameOrPhoneOrEmail(hotelRequestDto.getEmail(), hotelRequestDto.getPhone(), hotelRequestDto.getName());
+        Optional<Hotel> existingHotel = repository.findByNameOrPhoneOrEmail(
+                hotelRequestDto.getEmail(),
+                hotelRequestDto.getPhone(),
+                hotelRequestDto.getName()
+        );
+
+        Map<String, String> validationErrors = new HashMap<>();
 
         if (existingHotel.isPresent()) {
             Hotel hotel = existingHotel.get();
@@ -31,14 +39,18 @@ public class HotelServiceImpl implements IHotelService {
             String name = hotelRequestDto.getName();
 
             if (hotel.getEmail().equals(email)) {
-                throw new HotelAlreadyExistException("Hotel with email " + email + " already exists.");
+                validationErrors.put("email", "Hotel with email " + email + " already exists.");
             }
             if (hotel.getPhone().equals(phone)) {
-                throw new HotelAlreadyExistException("Hotel with phone " + phone + " already exists.");
+                validationErrors.put("phone", "Hotel with phone " + phone + " already exists.");
             }
             if (hotel.getName().equals(name)) {
-                throw new HotelAlreadyExistException("Hotel with name " + name + " already exists.");
+                validationErrors.put("name", "Hotel with name " + name + " already exists.");
             }
+
+        }
+        if (!validationErrors.isEmpty()) {
+            throw new HotelAlreadyExistException(validationErrors);
         }
 
         repository.save(HotelMapper.toHotel(hotelRequestDto));
