@@ -1,10 +1,16 @@
 package com.tmkproperties.booking.controller;
 
-import com.tmkproperties.booking.constants.BookingStatus;
-import com.tmkproperties.booking.dto.BookingRequestDto;
-import com.tmkproperties.booking.dto.BookingResponseDto;
-import com.tmkproperties.booking.dto.ResponseDto;
+import com.tmkproperties.booking.constants.*;
+import com.tmkproperties.booking.dto.*;
+import com.tmkproperties.booking.exception.BadRequestException;
 import com.tmkproperties.booking.service.IBookingService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,13 +21,39 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/bookings")
+@RequestMapping(path = "/api/v1/bookings", produces = "application/json")
 @Validated
 @RequiredArgsConstructor
+@Tag(name = "Bookings REST API",
+        description = "Endpoints for managing bookings, including creating, retrieving, updating booking dates, and performing actions such as approving, rejecting, checking in, checking out, and cancelling bookings. You can filter bookings using query parameters like status, room ID, and user ID."
+)
 public class BookingController {
 
     private final IBookingService service;
 
+    @Operation(
+            summary = "Create booking",
+            description = "Creates a new booking with the given booking details."
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "201",
+                            description = "HTTP status code 201 - Created",
+                            content = @Content(schema = @Schema(implementation = ResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "HTTP status code 400 - Bad Request",
+                            content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "HTTP status code 500 - Internal Server Error",
+                            content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    )
+            }
+    )
     @PostMapping
     public ResponseEntity<ResponseDto> createRoom(@Valid @RequestBody BookingRequestDto bookingRequestDto) {
         service.createBooking(bookingRequestDto);
@@ -30,91 +62,200 @@ public class BookingController {
                 .body(new ResponseDto(HttpStatus.CREATED, "Booking created successfully" ));
     }
 
+    @Operation(
+            summary = "Get booking by ID",
+            description = "Retrieves a booking by its ID."
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "HTTP status code 200 - OK",
+                            content = @Content(schema = @Schema(implementation = BookingResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "HTTP status code 404 - Not Found",
+                            content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "HTTP status code 500 - Internal Server Error",
+                            content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    )
+            }
+    )
     @GetMapping("/{id}")
     public ResponseEntity<BookingResponseDto> findById(@PathVariable Long id) {
         BookingResponseDto booking = service.findById(id);
         return ResponseEntity.status(HttpStatus.OK).body(booking);
     }
 
-
+    @Operation(
+            summary = "Change booking dates",
+            description = "Changes the dates of a booking by its ID."
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "HTTP status code 200 - OK",
+                            content = @Content(schema = @Schema(implementation = ResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "HTTP status code 400 - Bad Request",
+                            content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "HTTP status code 404 - Not Found",
+                            content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "HTTP status code 500 - Internal Server Error",
+                            content = @Content(schema = @Schema(implementation = ErrorResponseDto.class))
+                    )
+            }
+    )
     @PutMapping("/{id}/change-booking-dates")
     public ResponseEntity<ResponseDto> changeBookingDates(
             @PathVariable Long id,
-            @RequestBody BookingRequestDto bookingRequestDto)
+            @RequestBody UpdateBookingDatesDto updateBookingDatesDto)
     {
-        service.changeBookingDates(id, bookingRequestDto);
+        service.changeBookingDates(id, updateBookingDatesDto);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseDto(HttpStatus.OK, "Booking dates changed successfully."));
     }
 
+    @Operation(
+            summary = "Get bookings",
+            description = "Retrieves bookings. You can filter bookings by status, room ID, or user ID using query parameters."
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "HTTP status code 200 - OK",
+                            content = @Content(
+                                    schema = @Schema(implementation = BookingResponseDto.class, type = "array")
+                            )
+
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "HTTP status code 400 - Bad Request",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "HTTP status code 404 - Not Found",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "HTTP status code 500 - Internal Server Error",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    )
+            }
+    )
     @GetMapping
-    public ResponseEntity<List<BookingResponseDto>> findAll() {
-        List<BookingResponseDto> bookings = service.findAll();
+    public ResponseEntity<List<BookingResponseDto>> findBookings(
+            @Parameter(description = "Booking status to filter. Valid values are: CONFIRMED, CANCELLED, PENDING, COMPLETED")
+            @RequestParam(required = false) BookingStatus status,
+
+            @Parameter(description = "Room ID to filter bookings", example = "101")
+            @RequestParam(required = false) Long roomId,
+
+            @Parameter(description = "User ID to filter bookings", example = "25")
+            @RequestParam(required = false) Long userId) {
+
+        List<BookingResponseDto> bookings = service.findBookings(status, roomId, userId);
         return ResponseEntity.status(HttpStatus.OK).body(bookings);
     }
 
+    @Operation(
+            summary = "Handle booking action",
+            description = "Handles booking actions (approve, reject, check-in, check-out, cancel)."
+    )
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "HTTP status code 200 - OK",
+                            content = @Content(
+                                    schema = @Schema(implementation = ResponseDto.class)
+                            )
 
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<BookingResponseDto>> findAllByStatus(@PathVariable String status) {
-        List<BookingResponseDto> bookings = service.findAllByStatus(status);
-        return ResponseEntity.status(HttpStatus.OK).body(bookings);
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "HTTP status code 400 - Bad Request",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "HTTP status code 404 - Not Found",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "HTTP status code 500 - Internal Server Error",
+                            content = @Content(
+                                    schema = @Schema(implementation = ErrorResponseDto.class)
+                            )
+                    )
+            }
+    )
+    @PostMapping("/{id}/{action}")
+    public ResponseEntity<ResponseDto> handleBookingAction(
+            @Parameter(description = "ID of the booking", example = "123", required = true)
+            @Valid @PathVariable Long id,
+
+            @Parameter(description = "Booking action to be performed", required = true,
+                    schema = @Schema(implementation = BookingAction.class))
+            @Valid @PathVariable BookingAction action
+    ) {
+        return switch (action) {
+            case approve -> {
+                service.approveBooking(id);
+                yield createResponse("Booking approved successfully");
+            }
+            case reject -> {
+                service.rejectBooking(id);
+                yield createResponse("Booking rejected successfully");
+            }
+            case check_in -> {
+                service.checkInBooking(id);
+                yield createResponse("Booking checked-in successfully");
+            }
+            case check_out -> {
+                service.checkOutBooking(id);
+                yield createResponse("Booking checked-out successfully");
+            }
+            case cancel -> {
+                service.cancelBooking(id);
+                yield createResponse("Booking canceled successfully");
+            }
+            default -> throw new BadRequestException("Invalid action: " + action);
+        };
     }
 
-
-    @GetMapping("/room/{roomId}")
-    public ResponseEntity<List<BookingResponseDto>> findAllByRoomId(@PathVariable Long roomId) {
-        List<BookingResponseDto> bookings = service.findAllByRoomId(roomId);
-        return ResponseEntity.status(HttpStatus.OK).body(bookings);
+    private ResponseEntity<ResponseDto> createResponse(String message) {
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto(HttpStatus.OK, message));
     }
-
-
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<BookingResponseDto>> findAllByUserId(@PathVariable Long userId) {
-        List<BookingResponseDto> bookings = service.findAllByUserId(userId);
-        return ResponseEntity.status(HttpStatus.OK).body(bookings);
-    }
-
-    @PostMapping("/{id}/cancel-booking")
-    public ResponseEntity<ResponseDto> cancelBooking(@PathVariable Long id) {
-        service.cancelBooking(id);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new ResponseDto(HttpStatus.OK, "Booking canceled successfully" ));
-    }
-
-    @PostMapping("/{id}/approve-booking")
-    public ResponseEntity<ResponseDto> confirmBooking(@PathVariable Long id) {
-        service.approveBooking(id);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new ResponseDto(HttpStatus.OK, "Booking confirmed successfully" ));
-    }
-
-    @PostMapping("/{id}/reject-booking")
-    public ResponseEntity<ResponseDto> rejectBooking(@PathVariable Long id) {
-        service.rejectBooking(id);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new ResponseDto(HttpStatus.OK, "Booking rejected successfully" ));
-    }
-
-    @PostMapping("/{id}/check-in-booking")
-    public ResponseEntity<ResponseDto> checkInBooking(@PathVariable Long id) {
-        service.checkInBooking(id);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new ResponseDto(HttpStatus.OK, "Booking checked-in successfully" ));
-    }
-
-    @PostMapping("/{id}/check-out-booking")
-    public ResponseEntity<ResponseDto> checkOutBooking(@PathVariable Long id) {
-        service.checkOutBooking(id);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(new ResponseDto(HttpStatus.OK, "Booking checked-out successfully" ));
-    }
-
 
 
 }

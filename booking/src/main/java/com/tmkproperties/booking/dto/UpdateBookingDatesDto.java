@@ -1,6 +1,7 @@
 package com.tmkproperties.booking.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -13,6 +14,14 @@ import java.time.LocalDateTime;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Schema(
+        name = "Booking Dates",
+        description = "Dates of a booking for update",
+        example = "{\n" +
+                "  \"checkIn\": \"2022-01-01\",\n" +
+                "  \"checkOut\": \"2022-01-02\"\n" +
+                "}"
+)
 public class UpdateBookingDatesDto {
 
     @NotNull(message = "Check-in date cannot be null")
