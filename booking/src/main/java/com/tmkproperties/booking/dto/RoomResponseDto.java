@@ -1,12 +1,12 @@
-package com.tmkproperties.hotel.dto;
+package com.tmkproperties.booking.dto;
 
-import com.tmkproperties.hotel.constants.RoomType;
+
+import com.tmkproperties.booking.constants.RoomType;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
 
 @Data
 @Builder
@@ -15,6 +15,7 @@ public class RoomResponseDto {
     private RoomType roomType;
     private Integer roomNumber;
     private Integer maximumNumberOfGuests;
+    @NotNull
     private BigDecimal pricePerNight;
 
 }

@@ -13,12 +13,13 @@ import java.time.LocalDateTime;
         name = "Error Response",
         description = "Response for invalid request",
         type = "object",
-        example = "{\n" +
-                "  \"apiPath\": \"/booking\",\n" +
-                "  \"errorCode\":40# " +
-                "  \"errorMessage\": \"Lorem ipsum dolor sit amet\",\n" +
-                "  \"errorTime\": \"2022-01-01T00:00:00\"\n" +
-                "}"
+        example = """
+                {
+                  "apiPath": "/booking",
+                  "errorCode":40# \
+                  "errorMessage": "Lorem ipsum dolor sit amet",
+                  "errorTime": "2022-01-01T00:00:00"
+                }"""
 )
 public class ErrorResponseDto {
 

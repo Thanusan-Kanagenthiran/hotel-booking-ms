@@ -1,0 +1,17 @@
+package com.tmkproperties.hotel.dto;
+
+import com.tmkproperties.hotel.constants.HotelType;
+import jakarta.persistence.Enumerated;
+
+public class HotelResponseDto {
+
+    private Long id;
+    @Enumerated
+    private HotelType hotelType;
+    private String name;
+    private String location;
+    private String description;
+    private String phone;
+    private String email;
+
+}

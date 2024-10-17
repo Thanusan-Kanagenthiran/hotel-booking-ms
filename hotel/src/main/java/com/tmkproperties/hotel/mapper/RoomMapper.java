@@ -24,17 +24,12 @@ public class RoomMapper {
 
     public static RoomResponseDto toRoomResponseDto(Room room) {
 
-        List<LocalDate> unavailableDates = (room.getUnavailableDates() != null)
-                ? new ArrayList<>(room.getUnavailableDates())
-                : null;
-
         return RoomResponseDto.builder()
                 .id(room.getId())
                 .roomType(room.getRoomType())
                 .roomNumber(room.getRoomNumber())
                 .maximumNumberOfGuests(room.getMaximumNumberOfGuests())
                 .pricePerNight(room.getPricePerNight())
-                .unavailableDates(unavailableDates)
                 .build();
     }
 

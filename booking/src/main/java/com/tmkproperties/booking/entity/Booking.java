@@ -5,6 +5,7 @@ import com.tmkproperties.booking.constants.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -29,9 +30,9 @@ public class Booking extends BaseEntity {
     private LocalDate checkOut;
 
     @Enumerated(EnumType.STRING)
-    private BookingStatus status = BookingStatus.PENDING;
+    private BookingStatus status;
 
-    private double amount;
+    private BigDecimal amount;
 
     @PrePersist
     protected void onCreate() {

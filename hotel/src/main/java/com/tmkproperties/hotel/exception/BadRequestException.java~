@@ -1,0 +1,4 @@
+package com.tmkproperties.hotel.exception;
+
+public class BadRequestException {
+}

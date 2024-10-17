@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
@@ -12,15 +13,16 @@ import java.time.LocalDate;
 @Schema(
         name = "Booking Response",
         description = "Schema for booking response",
-        example = "{\n" +
-                "  \"id\": 1,\n" +
-                "  \"userId\": 1,\n" +
-                "  \"roomId\": 1,\n" +
-                "  \"checkIn\": \"2022-01-01\",\n" +
-                "  \"checkOut\": \"2022-01-02\",\n" +
-                "  \"status\": \"PENDING\",\n" +
-                "  \"amount\": 100.0\n" +
-                "}"
+        example = """
+                {
+                  "id": 1,
+                  "userId": 1,
+                  "roomId": 1,
+                  "checkIn": "2022-01-01",
+                  "checkOut": "2022-01-02",
+                  "status": "PENDING",
+                  "amount": 100.0
+                }"""
 )
 public class BookingResponseDto {
     private Long id;
@@ -29,5 +31,5 @@ public class BookingResponseDto {
     private LocalDate checkIn;
     private LocalDate checkOut;
     private BookingStatus status;
-    private double amount;
+    private BigDecimal amount;
 }

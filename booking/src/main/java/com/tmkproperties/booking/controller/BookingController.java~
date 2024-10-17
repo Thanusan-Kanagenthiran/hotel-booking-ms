@@ -231,29 +231,29 @@ public class BookingController {
         return switch (action) {
             case approve -> {
                 service.approveBooking(id);
-                yield actionResponse("Booking approved successfully");
+                yield createResponse("Booking approved successfully");
             }
             case reject -> {
                 service.rejectBooking(id);
-                yield actionResponse("Booking rejected successfully");
+                yield createResponse("Booking rejected successfully");
             }
             case check_in -> {
                 service.checkInBooking(id);
-                yield actionResponse("Booking checked-in successfully");
+                yield createResponse("Booking checked-in successfully");
             }
             case check_out -> {
                 service.checkOutBooking(id);
-                yield actionResponse("Booking checked-out successfully");
+                yield createResponse("Booking checked-out successfully");
             }
             case cancel -> {
                 service.cancelBooking(id);
-                yield actionResponse("Booking canceled successfully");
+                yield createResponse("Booking canceled successfully");
             }
             default -> throw new BadRequestException("Invalid action: " + action);
         };
     }
 
-    private ResponseEntity<ResponseDto> actionResponse(String message) {
+    private ResponseEntity<ResponseDto> createResponse(String message) {
         return ResponseEntity.status(HttpStatus.OK).body(new ResponseDto(HttpStatus.OK, message));
     }
 

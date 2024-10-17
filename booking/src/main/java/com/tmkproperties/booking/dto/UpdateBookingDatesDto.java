@@ -9,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -17,10 +16,11 @@ import java.time.LocalDateTime;
 @Schema(
         name = "Booking Dates",
         description = "Dates of a booking for update",
-        example = "{\n" +
-                "  \"checkIn\": \"2022-01-01\",\n" +
-                "  \"checkOut\": \"2022-01-02\"\n" +
-                "}"
+        example = """
+                {
+                  "checkIn": "2022-01-01",
+                  "checkOut": "2022-01-02"
+                }"""
 )
 public class UpdateBookingDatesDto {
 

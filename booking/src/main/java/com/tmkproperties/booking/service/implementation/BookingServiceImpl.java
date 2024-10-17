@@ -3,6 +3,7 @@ package com.tmkproperties.booking.service.implementation;
 import com.tmkproperties.booking.constants.BookingStatus;
 import com.tmkproperties.booking.dto.BookingRequestDto;
 import com.tmkproperties.booking.dto.BookingResponseDto;
+import com.tmkproperties.booking.dto.RoomResponseDto;
 import com.tmkproperties.booking.dto.UpdateBookingDatesDto;
 import com.tmkproperties.booking.entity.Booking;
 import com.tmkproperties.booking.exception.BadRequestException;
@@ -11,10 +12,14 @@ import com.tmkproperties.booking.mapper.BookingMapper;
 import com.tmkproperties.booking.repository.BookingRepository;
 import com.tmkproperties.booking.service.IBookingService;
 
+import com.tmkproperties.booking.service.client.RoomFiegnClient;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,23 +27,42 @@ import java.util.stream.Collectors;
 public class BookingServiceImpl implements IBookingService {
 
     private final BookingRepository repository;
+    private final RoomFiegnClient roomFiegnClient;
+
     @Override
     public void createBooking(BookingRequestDto bookingRequestDto) {
 
-        if(!bookingRequestDto.getCheckOut().isAfter(bookingRequestDto.getCheckIn())){
-            throw new RuntimeException("Check-out date must be after check-in date");
-        }
-        //        TODO:: Check Availability == hotel service
-        //        TODO:: get price per night == hotel service
+        BigDecimal amount;
+        int days;
 
-        double amount = 15000;
+        if (bookingRequestDto.getCheckOut().isBefore(bookingRequestDto.getCheckIn())) {
+            throw new BadRequestException("Check out date cannot be before check in date");
+        } else {
+            days = (int) (bookingRequestDto.getCheckOut().toEpochDay() - bookingRequestDto.getCheckIn().toEpochDay());
+        }
+
+        ResponseEntity<RoomResponseDto> responseEntity = roomFiegnClient.findById(bookingRequestDto.getRoomId());
+
+        if (!responseEntity.getStatusCode().is2xxSuccessful()) {
+            throw new ResourceNotFoundException("Room not found with id: " + bookingRequestDto.getRoomId());
+        } else {
+            List<Booking> bookings = repository.findByRoomId(bookingRequestDto.getRoomId());
+
+            for (Booking booking : bookings) {
+                if (!booking.getStatus().equals(BookingStatus.REJECTED)) {
+                    if (bookingRequestDto.getCheckOut().isAfter(booking.getCheckIn()) ||
+                            bookingRequestDto.getCheckIn().isBefore(booking.getCheckOut())) {
+                        throw new ResourceNotFoundException("Room is already booked for the selected dates");
+                    }
+                }
+            }
+
+            amount = Objects.requireNonNull(responseEntity.getBody()).getPricePerNight().multiply(BigDecimal.valueOf(days));
+        }
+
         Booking booking = BookingMapper.toBooking(bookingRequestDto);
         booking.setAmount(amount);
-
-        System.out.println(booking.toString());
         repository.save(booking);
-
-        //        TODO:: Update Unavailable dates == hotel service
     }
 
     @Override
@@ -98,7 +122,7 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     public void cancelBooking(Long id) {
         Booking booking = findBookingById(id);
-        if(booking.getStatus().equals(BookingStatus.CHECKED_IN) || booking.getStatus().equals(BookingStatus.CHECKED_OUT)){
+        if(booking.getStatus().equals(BookingStatus.PENDING)){
             throw new BadRequestException("Booking cannot be cancelled");
         }
         booking.setStatus(BookingStatus.CANCELLED);
