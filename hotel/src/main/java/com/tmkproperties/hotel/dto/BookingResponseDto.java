@@ -1,6 +1,6 @@
-package com.tmkproperties.booking.dto;
+package com.tmkproperties.hotel.dto;
 
-import com.tmkproperties.booking.constants.BookingStatus;
+import com.tmkproperties.hotel.constants.BookingStatus;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,10 +9,10 @@ import java.time.LocalDate;
 
 @Data
 @Builder
+
 public class BookingResponseDto {
     private Long id;
     private Long userId;
-    private Long roomId;
     private LocalDate checkIn;
     private LocalDate checkOut;
     private BookingStatus status;

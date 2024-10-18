@@ -1,5 +1,6 @@
 package com.tmkproperties.hotel.service.implementation;
 
+import com.tmkproperties.hotel.dto.BookingResponseDto;
 import com.tmkproperties.hotel.dto.RoomRequestDto;
 import com.tmkproperties.hotel.dto.RoomResponseDto;
 import com.tmkproperties.hotel.entity.Hotel;
@@ -11,7 +12,9 @@ import com.tmkproperties.hotel.mapper.RoomMapper;
 import com.tmkproperties.hotel.repository.HotelRepository;
 import com.tmkproperties.hotel.repository.RoomRepository;
 import com.tmkproperties.hotel.service.IRoomService;
+import com.tmkproperties.hotel.service.client.BookingFeignClient;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +27,7 @@ public class RoomServiceImpl implements IRoomService {
 
     private final HotelRepository hotelRepository;
     private final RoomRepository roomRepository;
+    private final BookingFeignClient bookingFeignClient;
 
     @Override
     public void createRoom(RoomRequestDto roomRequestDto) {
@@ -62,7 +66,11 @@ public class RoomServiceImpl implements IRoomService {
         Room room = roomRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Room not found with id: " + id)
         );
-        return RoomMapper.toRoomResponseDto(room);
+
+        ResponseEntity<List<BookingResponseDto>> responseEntity = bookingFeignClient.findBookings(null, room.getId(), null);
+
+        List<BookingResponseDto> bookings = responseEntity.getBody();
+        return RoomMapper.toRoomResponseDtoWithBookings(room, bookings);
     }
 
     @Override

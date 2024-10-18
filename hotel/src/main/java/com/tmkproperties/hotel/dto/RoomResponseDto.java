@@ -17,4 +17,6 @@ public class RoomResponseDto {
     private Integer maximumNumberOfGuests;
     private BigDecimal pricePerNight;
 
+    private  List<BookingResponseDto> bookings;
+
 }
