@@ -13,13 +13,13 @@ import com.tmkproperties.booking.repository.BookingRepository;
 import com.tmkproperties.booking.service.IBookingService;
 
 import com.tmkproperties.booking.service.client.RoomFiegnClient;
+import feign.FeignException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,32 +33,48 @@ public class BookingServiceImpl implements IBookingService {
     public void createBooking(BookingRequestDto bookingRequestDto) {
 
         BigDecimal amount;
-        int days;
+        int numberOfDays;
 
         if (bookingRequestDto.getCheckOut().isBefore(bookingRequestDto.getCheckIn())) {
             throw new BadRequestException("Check out date cannot be before check in date");
         } else {
-            days = (int) (bookingRequestDto.getCheckOut().toEpochDay() - bookingRequestDto.getCheckIn().toEpochDay());
+            numberOfDays = (int) (bookingRequestDto.getCheckOut().toEpochDay() - bookingRequestDto.getCheckIn().toEpochDay());
         }
 
-        ResponseEntity<RoomResponseDto> responseEntity = roomFiegnClient.findById(bookingRequestDto.getRoomId());
+        List<Booking> existingBookings = repository.findByRoomId(bookingRequestDto.getRoomId());
 
-        if (!responseEntity.getStatusCode().is2xxSuccessful()) {
-            throw new ResourceNotFoundException("Room not found with id: " + bookingRequestDto.getRoomId());
-        } else {
-            List<Booking> bookings = repository.findByRoomId(bookingRequestDto.getRoomId());
-
-            for (Booking booking : bookings) {
-                if (!booking.getStatus().equals(BookingStatus.REJECTED)) {
-                    if (bookingRequestDto.getCheckOut().isAfter(booking.getCheckIn()) ||
-                            bookingRequestDto.getCheckIn().isBefore(booking.getCheckOut())) {
-                        throw new ResourceNotFoundException("Room is already booked for the selected dates");
-                    }
+        for (Booking booking : existingBookings) {
+            if (!booking.getStatus().equals(BookingStatus.REJECTED)) {
+                if (bookingRequestDto.getCheckOut().isAfter(booking.getCheckIn()) ||
+                        bookingRequestDto.getCheckIn().isBefore(booking.getCheckOut())) {
+                    throw new ResourceNotFoundException("Room is already booked for the selected dates");
                 }
             }
-
-            amount = Objects.requireNonNull(responseEntity.getBody()).getPricePerNight().multiply(BigDecimal.valueOf(days));
         }
+
+        RoomResponseDto roomResponse;
+        try {
+
+            ResponseEntity<RoomResponseDto> response = roomFiegnClient.findById(bookingRequestDto.getRoomId());
+
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                throw new BadRequestException("Failed to fetch room details. Status code: " + response.getStatusCode());
+            }
+
+            roomResponse = response.getBody();
+
+            if (roomResponse == null) {
+                throw new BadRequestException("Room response is empty for room ID: " + bookingRequestDto.getRoomId());
+            }
+
+        } catch (FeignException.NotFound ex) {
+            throw new ResourceNotFoundException("Room with ID: " + bookingRequestDto.getRoomId() + " not found.");
+        } catch (FeignException.BadRequest ex) {
+            throw new BadRequestException("Bad request when fetching room details: " + ex.getMessage());
+        } catch (FeignException ex) {
+            throw new BadRequestException("Error occurred when calling room service: " + ex.getMessage());
+        }
+        amount = roomResponse.getPricePerNight().multiply(BigDecimal.valueOf(numberOfDays));
 
         Booking booking = BookingMapper.toBooking(bookingRequestDto);
         booking.setAmount(amount);
