@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
-@FeignClient("booking")
+@FeignClient(name = "booking", fallback = BookingDetailsFallBack.class)
 public interface BookingFeignClient {
     @GetMapping("api/v1/bookings")
     public ResponseEntity<List<BookingResponseDto>> findBookings(

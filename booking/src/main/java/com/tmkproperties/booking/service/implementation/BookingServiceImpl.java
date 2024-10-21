@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class BookingServiceImpl implements IBookingService {
 
-    private final BookingRepository repository;
-    private final RoomFiegnClient roomFiegnClient;
+    private  BookingRepository repository;
+    private  RoomFiegnClient roomFiegnClient;
 
     @Override
     public void createBooking(BookingRequestDto bookingRequestDto) {
@@ -45,8 +45,9 @@ public class BookingServiceImpl implements IBookingService {
 
         for (Booking booking : existingBookings) {
             if (!booking.getStatus().equals(BookingStatus.REJECTED)) {
-                if (bookingRequestDto.getCheckOut().isAfter(booking.getCheckIn()) ||
-                        bookingRequestDto.getCheckIn().isBefore(booking.getCheckOut())) {
+                if (bookingRequestDto.getCheckIn().isBefore(booking.getCheckOut()) &&
+                        bookingRequestDto.getCheckOut().isAfter(booking.getCheckIn()))
+                {
                     throw new ResourceNotFoundException("Room is already booked for the selected dates");
                 }
             }

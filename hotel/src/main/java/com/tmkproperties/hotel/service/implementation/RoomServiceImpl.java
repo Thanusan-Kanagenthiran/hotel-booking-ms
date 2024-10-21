@@ -14,9 +14,11 @@ import com.tmkproperties.hotel.repository.RoomRepository;
 import com.tmkproperties.hotel.service.IRoomService;
 import com.tmkproperties.hotel.service.client.BookingFeignClient;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -25,9 +27,9 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class RoomServiceImpl implements IRoomService {
 
-    private final HotelRepository hotelRepository;
-    private final RoomRepository roomRepository;
-    private final BookingFeignClient bookingFeignClient;
+    private  HotelRepository hotelRepository;
+    private  RoomRepository roomRepository;
+    private  BookingFeignClient bookingFeignClient;
 
     @Override
     public void createRoom(RoomRequestDto roomRequestDto) {
@@ -67,10 +69,16 @@ public class RoomServiceImpl implements IRoomService {
                 () -> new ResourceNotFoundException("Room not found with id: " + id)
         );
 
-        ResponseEntity<List<BookingResponseDto>> responseEntity = bookingFeignClient.findBookings(null, room.getId(), null);
+        ResponseEntity<List<BookingResponseDto>> bookingResponseEntity = bookingFeignClient.findBookings(null, room.getId(), null);
+        List<BookingResponseDto> bookings =
+                (bookingResponseEntity != null && bookingResponseEntity.getBody() != null)
+                        ? bookingResponseEntity.getBody()
+                        : new ArrayList<>();
 
-        List<BookingResponseDto> bookings = responseEntity.getBody();
         return RoomMapper.toRoomResponseDtoWithBookings(room, bookings);
+
+
+
     }
 
     @Override

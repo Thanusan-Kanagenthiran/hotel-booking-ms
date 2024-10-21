@@ -55,7 +55,13 @@ public class BookingController {
             }
     )
     @PostMapping
-    public ResponseEntity<ResponseDto> createBooking(@Valid @RequestBody BookingRequestDto bookingRequestDto) {
+    public ResponseEntity<ResponseDto> createBooking(@Valid @RequestBody BookingRequestDto bookingRequestDto,
+                                                     @RequestHeader(value = "userId", required = false) String userId,
+                                                     @RequestHeader(value = "email", required = false) String email) {
+
+        System.out.println("User ID: " + userId);
+        System.out.println("Email: " + email);
+
         service.createBooking(bookingRequestDto);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
