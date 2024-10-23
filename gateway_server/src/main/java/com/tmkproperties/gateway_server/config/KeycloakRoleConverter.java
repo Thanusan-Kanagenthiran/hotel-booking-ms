@@ -32,4 +32,3 @@ public class KeycloakRoleConverter implements Converter<Jwt, Collection<GrantedA
                 .collect(Collectors.toList());
     }
 }
-

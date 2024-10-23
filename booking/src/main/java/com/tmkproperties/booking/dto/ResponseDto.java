@@ -1,18 +1,18 @@
 package com.tmkproperties.booking.dto;
 
 
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpStatus;
 
 @Data @AllArgsConstructor
-@Schema(
-    description = "Response for a successful operation",
-    name = "Response",
-    type = "object",
-    example = "{ \"statusCode\": 200 ,\n" +
-            "  \"statusMessage\": \"Lorem ipsum Success\" }"
+@ApiResponse(
+        responseCode = "200",
+        description = "HTTP status code OK - OK",
+        content = @Content(schema = @Schema(implementation = ResponseDto.class))
 )
 public class ResponseDto {
 

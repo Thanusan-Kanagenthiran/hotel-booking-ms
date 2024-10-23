@@ -40,18 +40,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(validationErrors, HttpStatus.BAD_REQUEST);
     }
 
-
-    @ExceptionHandler(HotelAlreadyExistException.class)
-    public ResponseEntity<Map<String, String>> handleHotelAlreadyExistsException(HotelAlreadyExistException exception) {
-        return new ResponseEntity<>(exception.getValidationErrors(), HttpStatus.CONFLICT);
-    }
-
-
-    @ExceptionHandler(RoomNumberAlreadyExistsException.class)
-    public ResponseEntity<Map<String, String>> handleRoomNumberAlreadyExistsException(RoomNumberAlreadyExistsException ex) {
-        Map<String, String> errorResponse = new HashMap<>();
-        errorResponse.put("roomNumber", ex.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+    @ExceptionHandler(ResourceAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponseDto> handleResourceAlreadyExistsException(
+            ResourceAlreadyExistsException exception,
+            WebRequest webRequest) {
+        ErrorResponseDto errorResponseDTO = new ErrorResponseDto(
+                webRequest.getDescription(false),
+                HttpStatus.CONFLICT,
+                exception.getMessage(),
+                LocalDateTime.now()
+        );
+        return new ResponseEntity<>(errorResponseDTO, HttpStatus.CONFLICT);
     }
 
 

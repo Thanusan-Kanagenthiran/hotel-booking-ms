@@ -3,6 +3,8 @@ package com.tmkproperties.hotel.mapper;
 import com.tmkproperties.hotel.dto.BookingResponseDto;
 import com.tmkproperties.hotel.dto.RoomRequestDto;
 import com.tmkproperties.hotel.dto.RoomResponseDto;
+import com.tmkproperties.hotel.dto.RoomResponseDtoWithBookings;
+import com.tmkproperties.hotel.dto.RoomResponseDtoWithDetails;
 import com.tmkproperties.hotel.entity.Hotel;
 import com.tmkproperties.hotel.entity.Room;
 
@@ -21,9 +23,8 @@ public class RoomMapper {
     }
 
 
-    public static RoomResponseDto toRoomResponseDtoWithBookings(Room room, List<BookingResponseDto> bookings) {
-
-        return RoomResponseDto.builder()
+    public static RoomResponseDtoWithBookings toRoomResponseDtoWithBookings(Room room, List<BookingResponseDto> bookings) {
+        return RoomResponseDtoWithBookings.builder()
                 .id(room.getId())
                 .roomType(room.getRoomType())
                 .roomNumber(room.getRoomNumber())
@@ -33,8 +34,24 @@ public class RoomMapper {
                 .build();
     }
 
-    public static RoomResponseDto toRoomResponseDto(Room room) {
 
+    public static RoomResponseDtoWithDetails toRoomResponseDtoWithDetail(Room room) {
+        return RoomResponseDtoWithDetails.builder()
+                .id(room.getId())
+                .roomType(room.getRoomType())
+                .roomNumber(room.getRoomNumber())
+                .maximumNumberOfGuests(room.getMaximumNumberOfGuests())
+                .pricePerNight(room.getPricePerNight())
+                .email(room.getHotel().getEmail())
+                .phone(room.getHotel().getPhone())
+                .hotelType(room.getHotel().getHotelType())
+                .hotelName(room.getHotel().getName())
+                .location(room.getHotel().getLocation())
+                .build();
+    }
+
+
+    public static RoomResponseDto toRoomResponseDto(Room room) {
         return RoomResponseDto.builder()
                 .id(room.getId())
                 .roomType(room.getRoomType())
@@ -43,5 +60,6 @@ public class RoomMapper {
                 .pricePerNight(room.getPricePerNight())
                 .build();
     }
+
 
 }

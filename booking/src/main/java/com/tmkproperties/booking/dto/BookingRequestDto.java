@@ -2,9 +2,7 @@ package com.tmkproperties.booking.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,19 +15,27 @@ import java.time.LocalDate;
 @Schema(
         name = "Booking request",
         description = "Schema for booking request",
-        example = """
-                {
-                    "userId": 1,
-                    "roomId": 1,
-                    "checkIn": "2022-01-01",
-                    "checkOut": "2022-01-02"
-                }"""
+        example = "{\n" +
+                "  \"email\": \"example@gamil.com\",\n" +
+                "  \"mobile\": \"0772433010\",\n" +
+                "  \"roomId\": 1,\n" +
+                "  \"checkIn\": \"2022-01-01\",\n" +
+                "  \"checkOut\": \"2022-01-02\"\n" +
+                "}"
 )
 public class BookingRequestDto {
-    @Schema(description = "User id", example = "1")
+
+    @Schema(description = "User id", example = "example@gamil.com")
     @NotNull(message = "User id cannot be null")
-    @Positive(message = "User id cannot be negative")
-    private Long userId;
+    @Email(message = "Invalid email format")
+    private String email;
+
+
+    @Schema(description = "Mobile number",
+            example = "0772433010, +94772433010, 0712345678")
+    @NotNull(message = "Mobile number cannot be null")
+    @Pattern(regexp = "^(\\+94|0)?[1-9]\\d{8}$", message = "Invalid mobile number format")
+    private String mobile;
 
     @Schema(description = "Room id", example = "1")
     @NotNull(message = "Room id cannot be null")

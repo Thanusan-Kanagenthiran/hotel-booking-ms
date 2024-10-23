@@ -1,6 +1,7 @@
 package com.tmkproperties.hotel.entity;
 
 import com.tmkproperties.hotel.constants.HotelType;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -25,10 +26,10 @@ public class Hotel extends BaseEntity {
     private String location;
     private String description;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String phone;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     private String email;
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.REMOVE)

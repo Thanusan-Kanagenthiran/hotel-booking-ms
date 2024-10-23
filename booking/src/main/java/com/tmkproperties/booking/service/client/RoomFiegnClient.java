@@ -1,6 +1,6 @@
 package com.tmkproperties.booking.service.client;
 
-import com.tmkproperties.booking.dto.RoomResponseDto;
+import com.tmkproperties.booking.dto.RoomResponseDtoWithDetails;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,5 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface RoomFiegnClient {
 
     @GetMapping(path = "api/v1/rooms/{id}")
-    public ResponseEntity<RoomResponseDto> findById(@PathVariable Long id);
+    public ResponseEntity<RoomResponseDtoWithDetails> findById(@PathVariable Long id);
+
 }

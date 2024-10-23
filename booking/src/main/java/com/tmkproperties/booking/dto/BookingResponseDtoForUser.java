@@ -9,10 +9,16 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class BookingResponseDto {
+public class BookingResponseDtoForUser {
     private Long id;
-    private Long userId;
-    private Long roomId;
+    private String roomType;
+    private Integer roomNumber;
+    private String hotelType;
+    private String hotelName;
+    private String hotelLocation;
+    private String hotelDescription;
+    private String hotelContactPhone;
+    private String hotelContactEmail;
     private LocalDate checkIn;
     private LocalDate checkOut;
     private BookingStatus status;

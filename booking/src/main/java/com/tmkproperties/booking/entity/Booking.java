@@ -21,7 +21,9 @@ public class Booking extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long userId;
+    private String userEmail;
+
+    private String userPhone;
 
     private Long roomId;
 
@@ -34,10 +36,13 @@ public class Booking extends BaseEntity {
 
     private BigDecimal amount;
 
+    private String hotelEmail;
+
     @PrePersist
     protected void onCreate() {
         if (this.status == null) {
             this.status = BookingStatus.PENDING;
         }
     }
+
 }

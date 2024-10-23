@@ -3,6 +3,7 @@ package com.tmkproperties.gateway_server.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
@@ -19,23 +20,23 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity serverHttpSecurity) {
         serverHttpSecurity.authorizeExchange(exchanges -> exchanges
-                        .pathMatchers("/tmk-properties/hotel/**").hasRole("HOST")
-                        .pathMatchers("/tmk-properties/booking/**").hasAnyRole("USER", "HOST"))
+                        .pathMatchers(HttpMethod.GET,"/tmk-properties/hotel/api/v1/hotels").permitAll()
+                        .pathMatchers(HttpMethod.GET,"/tmk-properties/hotel/api/v1/hotels/{id}").permitAll()
+                        .pathMatchers("/tmk-properties/hotel/api/v1/hotels/host").hasRole("HOST")
+                        .pathMatchers(HttpMethod.GET,"/tmk-properties/hotel/api/v1/rooms").permitAll()
+                        .pathMatchers(HttpMethod.GET,"/tmk-properties/hotel/api/v1/rooms/{id}").permitAll()
+                        .pathMatchers("/tmk-properties/hotel/api/v1/rooms/host").hasRole("HOST")
+                        .pathMatchers(HttpMethod.GET,"/tmk-properties/booking/api/v1/bookings/user").hasRole("USER")
+                        .pathMatchers(HttpMethod.GET,"/tmk-properties/booking/api/v1/bookings/host").hasRole("HOST"))
                 .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec
-                        .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor()))
-                        );
+                        .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
         serverHttpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable);
         return serverHttpSecurity.build();
     }
 
     private Converter<Jwt, Mono<AbstractAuthenticationToken>> grantedAuthoritiesExtractor() {
-        JwtAuthenticationConverter jwtAuthenticationConverter =
-                new JwtAuthenticationConverter();
-        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter
-                (new KeycloakRoleConverter());
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(new KeycloakRoleConverter());
         return new ReactiveJwtAuthenticationConverterAdapter(jwtAuthenticationConverter);
     }
-
-
-
 }

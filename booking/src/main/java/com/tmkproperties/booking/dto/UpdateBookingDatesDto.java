@@ -20,7 +20,7 @@ import java.time.LocalDate;
                 {
                   "checkIn": "2022-01-01",
                   "checkOut": "2022-01-02"
-                }"""
+                } """
 )
 public class UpdateBookingDatesDto {
 

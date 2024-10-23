@@ -31,8 +31,6 @@ public class HotelRequestDto {
     @NotEmpty(message = "Description cannot be empty")
     private String description;
 
-
-    @Column(unique = true, nullable = false)
     @NotEmpty(message = "Phone cannot be empty")
     @Pattern(regexp = "^(\\+\\d{1,3}[- ]?)?\\d{10}$", message = "Invalid phone number format")
     private String phone;

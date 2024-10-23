@@ -8,13 +8,17 @@ import java.util.List;
 
 public interface IHotelService {
 
-    void createHotel(@Valid HotelRequestDto hotelRequestDto);
+    void createHotel(@Valid HotelRequestDto hotelRequestDto, String email);
 
     List<HotelResponseDto> findAll();
 
+    List<HotelResponseDto> findAllByEmail(String email);
+
     HotelResponseDto findById(Long id);
 
-    void updateHotel(Long id, @Valid HotelRequestDto hotelRequestDto);
+    void updateHotel(Long id, @Valid HotelRequestDto hotelRequestDto, String email);
 
-    void deleteHotel(Long id);
+    void deleteHotel(Long id, String email);
+
+    List<HotelResponseDto> findAllByIdAndEmail(Long id, String email);
 }
