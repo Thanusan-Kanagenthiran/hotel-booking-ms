@@ -1,10 +1,13 @@
 package com.tmkproperties.booking.controller;
 
+import com.tmkproperties.booking.config.kafka.KafkaMessageSender;
 import com.tmkproperties.booking.dto.*;
+import com.tmkproperties.booking.entity.Booking;
 import com.tmkproperties.booking.service.IBookingService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -23,12 +26,18 @@ public class BookingController {
 
     private final IBookingService service;
 
+    @Autowired
+    private KafkaMessageSender kafkaMessageSender;
+
     @PostMapping("/user")
     public ResponseEntity<ResponseDto> createBooking(@Valid @RequestBody BookingRequestDto bookingRequestDto, @RequestParam String email) {
-        service.createBooking(bookingRequestDto, email);
+       Booking booking = service.createBooking(bookingRequestDto, email);
+        kafkaMessageSender.sendMessage("booking", 0, booking.getId().toString(), booking);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ResponseDto(HttpStatus.CREATED, "Booking created successfully" ));
+
+
     }
 
     @GetMapping("/user")

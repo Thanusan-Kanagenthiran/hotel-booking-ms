@@ -28,9 +28,9 @@ public class BookingServiceImpl implements IBookingService {
     private final BookingRepository repository;
     private final RoomFiegnClient roomFeignClient;
 
-    @Override
-    public void createBooking(BookingRequestDto bookingRequestDto, String email) {
 
+    @Override
+    public Booking createBooking(BookingRequestDto bookingRequestDto, String email) {
         validateEmail(bookingRequestDto.getEmail(), email);
 
         int numberOfDays = validateCheckInOutDates(bookingRequestDto.getCheckIn(), bookingRequestDto.getCheckOut());
@@ -42,10 +42,11 @@ public class BookingServiceImpl implements IBookingService {
         Booking booking = BookingMapper.toBooking(bookingRequestDto);
         booking.setAmount(amount);
         booking.setHotelEmail(hotelEmail);
-        repository.save(booking);
+
+
+        return repository.save(booking);
 
     }
-
 
 
     @Override

@@ -11,6 +11,7 @@
         <module name="hotel" />
         <module name="booking" />
         <module name="gateway_server" />
+        <module name="mail_server" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -23,6 +24,7 @@
       <module name="eureka_server" options="-parameters" />
       <module name="gateway_server" options="-parameters" />
       <module name="hotel" options="-parameters" />
+      <module name="mail_server" options="-parameters" />
       <module name="notification" options="-parameters" />
     </option>
   </component>

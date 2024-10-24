@@ -46,12 +46,16 @@
   &quot;associatedIndex&quot;: 2
 }</component>
   <component name="ProjectId" id="2nQT3kqXht8nT3kLNAG99VSqLt8" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Maven.booking [clean,install].executor&quot;: &quot;Run&quot;,
     &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
     &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
     &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
@@ -62,19 +66,28 @@
     &quot;Spring Boot.EurekaServerApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.GatewayServerApplication.executor&quot;: &quot;Run&quot;,
     &quot;Spring Boot.HotelApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Spring Boot.MailServerApplication.executor&quot;: &quot;Run&quot;,
     &quot;com.codeium.enabled&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_directory_selection&quot;: &quot;C:/Users/AD-071/OneDrive - Acentura (Pvt) Ltd/Desktop/hotel-booking-ms/hotel-booking-ms/mail_server/src/main/java/com/tmkproperties/mail_server&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/AD-071/OneDrive - Acentura (Pvt) Ltd/Desktop/hotel-booking-ms/mail_server&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
     &quot;run.configurations.included.in.services&quot;: &quot;true&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;com.codeium.AppSettingsConfigurable&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
   &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;postgresql&quot;
+    ],
     &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
       &quot;directory&quot;,
       &quot;module&quot;,
@@ -89,9 +102,18 @@
     <key name="CreateClassDialog.RecentsKey">
       <recent name="com.tmkproperties.hotel.dto" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\AD-071\OneDrive - Acentura (Pvt) Ltd\Desktop\hotel-booking-ms\hotel-booking-ms" />
+    </key>
     <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="com.tmkproperties.mail_server.entity" />
       <recent name="com.tmkproperties.booking.dto" />
     </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn clean install" />
+    </option>
   </component>
   <component name="RunDashboard">
     <option name="configurationTypes">
@@ -132,7 +154,15 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
+    <configuration name="MailServerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <module name="mail_server" />
+      <option name="SPRING_BOOT_MAIN_CLASS" value="com.tmkproperties.mail_server.MailServerApplication" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <list>
+      <item itemvalue="Spring Boot.MailServerApplication" />
       <item itemvalue="Spring Boot.EurekaServerApplication" />
       <item itemvalue="Spring Boot.GatewayServerApplication" />
       <item itemvalue="Spring Boot.BookingApplication" />
@@ -161,12 +191,28 @@
       <workItem from="1729607927767" duration="6468000" />
       <workItem from="1729616353317" duration="4544000" />
       <workItem from="1729658025526" duration="28107000" />
-      <workItem from="1729686277741" duration="18334000" />
+      <workItem from="1729686277741" duration="18860000" />
+      <workItem from="1729710815331" duration="5249000" />
+      <workItem from="1729742982008" duration="8543000" />
+      <workItem from="1729755697600" duration="13179000" />
     </task>
+    <task id="LOCAL-00001" summary="Until role based authorization except for the identifying user role">
+      <option name="closed" value="true" />
+      <created>1729707212237</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1729707212238</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Until role based authorization except for the identifying user role" />
+    <option name="LAST_COMMIT_MESSAGE" value="Until role based authorization except for the identifying user role" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

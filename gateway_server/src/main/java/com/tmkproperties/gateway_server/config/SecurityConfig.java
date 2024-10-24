@@ -26,8 +26,8 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.GET,"/tmk-properties/hotel/api/v1/rooms").permitAll()
                         .pathMatchers(HttpMethod.GET,"/tmk-properties/hotel/api/v1/rooms/{id}").permitAll()
                         .pathMatchers("/tmk-properties/hotel/api/v1/rooms/host").hasRole("HOST")
-                        .pathMatchers(HttpMethod.GET,"/tmk-properties/booking/api/v1/bookings/user").hasRole("USER")
-                        .pathMatchers(HttpMethod.GET,"/tmk-properties/booking/api/v1/bookings/host").hasRole("HOST"))
+                        .pathMatchers("/tmk-properties/booking/api/v1/bookings/user").hasRole("USER")
+                        .pathMatchers("/tmk-properties/booking/api/v1/bookings/host").hasRole("HOST"))
                 .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec
                         .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
         serverHttpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable);

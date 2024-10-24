@@ -3,13 +3,14 @@ import com.tmkproperties.booking.dto.BookingRequestDto;
 import com.tmkproperties.booking.dto.BookingResponseDtoForHost;
 import com.tmkproperties.booking.dto.BookingResponseDtoForUser;
 import com.tmkproperties.booking.dto.UpdateBookingDatesDto;
+import com.tmkproperties.booking.entity.Booking;
 import jakarta.validation.Valid;
 
 import java.util.List;
 
 
 public interface IBookingService {
-    void createBooking(@Valid BookingRequestDto bookingRequestDto, String email);
+    Booking createBooking(@Valid BookingRequestDto bookingRequestDto, String email);
 
     void changeBookingDates(Long id, UpdateBookingDatesDto updateBookingDatesDto, String email);
 

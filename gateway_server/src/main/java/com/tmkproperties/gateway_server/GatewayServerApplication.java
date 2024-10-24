@@ -22,7 +22,6 @@ public class GatewayServerApplication {
 				.route(p -> p
 						.path("/tmk-properties/hotel/**")
 						.filters(f -> f
-								.addRequestParameter("email" , "contact@thandtel.coi")
 								.rewritePath("/tmk-properties/hotel/(?<segment>.*)", "/${segment}")
 								.circuitBreaker(config -> config.setName("hotelServiceCircuitBreaker").setFallbackUri("forward:/contact-support"))
 								.addResponseHeader("X-Requested-Time", LocalDateTime.now().toString()))
@@ -30,7 +29,6 @@ public class GatewayServerApplication {
 				.route(p -> p
 						.path("/tmk-properties/booking/**")
 						.filters(f -> f
-								.addRequestParameter("email" , "contact@thandtel.coi")
 								.rewritePath("/tmk-properties/booking/(?<segment>.*)", "/${segment}")
 								.circuitBreaker(config -> config.setName("bookingServiceCircuitBreaker").setFallbackUri("forward:/contact-support"))
 								.addResponseHeader("X-Requested-Time", LocalDateTime.now().toString()))
