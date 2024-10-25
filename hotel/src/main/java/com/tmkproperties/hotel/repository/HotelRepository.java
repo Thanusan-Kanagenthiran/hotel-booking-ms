@@ -13,5 +13,5 @@ public interface HotelRepository extends JpaRepository<Hotel, Long> {
 
     List<Hotel> findByEmail(String email);
 
-    List<Hotel> findAllByIdAndEmail(Long id, String email);
+    Hotel findByIdAndEmail(Long id, String email);
 }

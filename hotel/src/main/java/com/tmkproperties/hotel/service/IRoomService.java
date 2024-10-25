@@ -11,8 +11,6 @@ public interface IRoomService {
 
     RoomResponseDtoWithBookings findByIdWithBookings(Long id, String email);
 
-    RoomResponseDto findById(Long id);
-
     RoomResponseDtoWithDetails findByIdWithDetails(Long id);
 
     void updateRoom(Long id,RoomRequestDto roomRequestDto, String email);

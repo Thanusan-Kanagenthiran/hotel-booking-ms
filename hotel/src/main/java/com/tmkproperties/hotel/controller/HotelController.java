@@ -52,9 +52,9 @@ public class HotelController {
     }
 
     @GetMapping("/host/{id}")
-    public ResponseEntity<List<HotelResponseDto>> findAllByEmailAndId(@PathVariable Long id,@RequestParam String email) {
-        List<HotelResponseDto> hotels = service.findAllByIdAndEmail(id, email);
-        return ResponseEntity.status(HttpStatus.OK).body(hotels);
+    public ResponseEntity<HotelResponseDto> findByEmailAndId(@PathVariable Long id,@RequestParam String email) {
+       HotelResponseDto hotel = service.findByIdAndEmail(id, email);
+        return ResponseEntity.status(HttpStatus.OK).body(hotel);
     }
 
     @PutMapping("/host/{id}")

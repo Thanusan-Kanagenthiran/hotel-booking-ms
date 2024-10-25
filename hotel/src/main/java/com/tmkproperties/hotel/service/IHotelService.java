@@ -20,5 +20,5 @@ public interface IHotelService {
 
     void deleteHotel(Long id, String email);
 
-    List<HotelResponseDto> findAllByIdAndEmail(Long id, String email);
+    HotelResponseDto findByIdAndEmail(Long id, String email);
 }

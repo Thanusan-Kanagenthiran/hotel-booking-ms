@@ -20,9 +20,13 @@ public class Room extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private RoomType roomType;
 
+    @Column(nullable = false)
     private Integer maximumNumberOfGuests;
+
+    @Column(nullable = false)
     private BigDecimal pricePerNight;
 
+    @Column(nullable = false)
     private Integer roomNumber;
 
     @ManyToOne

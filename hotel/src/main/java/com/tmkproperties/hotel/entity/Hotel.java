@@ -22,8 +22,13 @@ public class Hotel extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private HotelType hotelType;
 
+    @Column(unique = true, nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String location;
+
+    @Column(nullable = false)
     private String description;
 
     @Column(nullable = false)
