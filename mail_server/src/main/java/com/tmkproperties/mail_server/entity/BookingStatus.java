@@ -6,6 +6,6 @@ public enum BookingStatus {
     REJECTED,
     PENDING,
     CHECKED_IN,
-    CHECKED_OUT; // This represents the end of the user's stay
+    CHECKED_OUT;
 
 }

@@ -17,9 +17,11 @@ import java.util.Optional;
 @Repository
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    List<Booking> findByUserEmail(String email);
+    List<Booking> findByGuestEmail(String email);
 
-    Optional<Booking> findByIdAndUserEmail(Long id, String email);
+    List<Booking> findByHotelEmail(String email);
+
+    Optional<Booking> findByIdAndGuestEmail(Long id, String email);
 
     @Modifying
     @Transactional

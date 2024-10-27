@@ -12,6 +12,7 @@ import java.time.LocalDate;
 public class BookingResponseDtoForHost {
     private Long id;
     private Long roomId;
+    private String guestName;
     private String guestContactPhone;
     private String guestContactEmail;
     private LocalDate checkIn;

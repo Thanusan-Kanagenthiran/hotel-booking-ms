@@ -24,11 +24,11 @@ public class PdfService {
         new File(outputDir).mkdirs();
 
         Context context = new Context();
-        context.setVariable("BookingReceipt", booking);
+        context.setVariable("Booking", booking);
 
         String htmlContent = templateEngine.process("booking-confirmation", context);
 
-        String fileName = booking.getUserEmail().replaceAll(" ", "_") + booking.getId() + ".pdf";
+        String fileName = booking.getGuestContactEmail().replaceAll(" ", "_") + booking.getId() + ".pdf";
         String filePath = outputDir + fileName;
 
         try (FileOutputStream outputStream = new FileOutputStream(filePath)) {

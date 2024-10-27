@@ -21,9 +21,11 @@ public class Booking extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String userEmail;
+    private String guestName;
 
-    private String userPhone;
+    private String guestEmail;
+
+    private String guestPhone;
 
     private Long roomId;
 

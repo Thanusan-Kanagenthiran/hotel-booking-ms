@@ -11,6 +11,9 @@ import java.time.LocalDate;
 @Builder
 public class BookingResponseDtoForUser {
     private Long id;
+    private String guestName;
+    private String guestContactPhone;
+    private String guestContactEmail;
     private String roomType;
     private Integer roomNumber;
     private String hotelType;

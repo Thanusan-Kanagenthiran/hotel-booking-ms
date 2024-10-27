@@ -17,14 +17,38 @@ public class Booking {
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("userEmail")
-    private String userEmail;
+    @JsonProperty("roomType")
+    private String roomType;
 
-    @JsonProperty("userPhone")
-    private String userPhone;
+    @JsonProperty("roomNumber")
+    private Integer roomNumber;
 
-    @JsonProperty("roomId")
-    private Long roomId;
+    @JsonProperty("hotelType")
+    private String hotelType;
+
+    @JsonProperty("hotelName")
+    private String hotelName;
+
+    @JsonProperty("hotelLocation")
+    private String hotelLocation;
+
+    @JsonProperty("hotelDescription")
+    private String hotelDescription;
+
+    @JsonProperty("hotelContactPhone")
+    private String hotelContactPhone;
+
+    @JsonProperty("hotelContactEmail")
+    private String hotelContactEmail;
+
+    @JsonProperty("guestName")
+    private String guestName;
+
+    @JsonProperty("guestContactPhone")
+    private String guestContactPhone;
+
+    @JsonProperty("guestContactEmail")
+    private String guestContactEmail;
 
     @JsonProperty("checkIn")
     private LocalDate checkIn;
@@ -38,19 +62,16 @@ public class Booking {
     @JsonProperty("amount")
     private BigDecimal amount;
 
-    @JsonProperty("hotelEmail")
-    private String hotelEmail;
+    @JsonProperty("createdAt")
+    private LocalDateTime createdAt;
+
+    @JsonProperty("updatedAt")
+    private LocalDateTime updatedAt;
 
     @JsonProperty("createdBy")
     private String createdBy;
 
-    @JsonProperty("createdDate")
-    private LocalDateTime createdDate;
-
     @JsonProperty("updatedBy")
     private String updatedBy;
-
-    @JsonProperty("updatedDate")
-    private LocalDateTime updatedDate;
 
 }

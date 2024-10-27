@@ -30,7 +30,7 @@ public class BookingServiceImpl implements IBookingService {
 
 
     @Override
-    public Booking createBooking(BookingRequestDto bookingRequestDto, String email) {
+    public BookingResponseDtoForUser createBooking(BookingRequestDto bookingRequestDto, String email) {
         validateEmail(bookingRequestDto.getEmail(), email);
 
         int numberOfDays = validateCheckInOutDates(bookingRequestDto.getCheckIn(), bookingRequestDto.getCheckOut());
@@ -42,9 +42,10 @@ public class BookingServiceImpl implements IBookingService {
         Booking booking = BookingMapper.toBooking(bookingRequestDto);
         booking.setAmount(amount);
         booking.setHotelEmail(hotelEmail);
+        Booking newBooking = repository.save(booking);
 
-
-        return repository.save(booking);
+        RoomResponseDtoWithDetails roomDetails = fetchRoomDetails(newBooking.getRoomId());
+        return BookingMapper.toBookingResponseDtoForUser(newBooking, roomDetails);
 
     }
 
@@ -52,7 +53,7 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     @Transactional
     public void changeBookingDates(Long id, UpdateBookingDatesDto updateBookingDatesDto, String email) {
-        Optional<Booking> booking = repository.findByIdAndUserEmail(id, email);
+        Optional<Booking> booking = repository.findByIdAndGuestEmail(id, email);
         if (booking.isEmpty()) {
             throw new ResourceNotFoundException("Booking not found");
         }
@@ -77,7 +78,7 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     public void cancelBooking(Long id, String email) {
-        Optional<Booking> booking = repository.findByIdAndUserEmail(id, email);
+        Optional<Booking> booking = repository.findByIdAndGuestEmail(id, email);
 
         if (booking.isEmpty()) {
             throw new ResourceNotFoundException("Booking not found");
@@ -150,7 +151,7 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     public List<BookingResponseDtoForUser> getAllBookingsByUser(String email) {
-        List<Booking> bookings = repository.findByUserEmail(email);
+        List<Booking> bookings = repository.findByGuestEmail(email);
         if (bookings.isEmpty()) {
             throw new ResourceNotFoundException("No bookings found for the user");
         }
@@ -165,7 +166,7 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     public BookingResponseDtoForUser getUserBooking(Long id, String email) {
-        Optional<Booking> booking = repository.findByIdAndUserEmail(id, email);
+        Optional<Booking> booking = repository.findByIdAndGuestEmail(id, email);
         if (booking.isEmpty()) {
             throw new ResourceNotFoundException("Booking not found");
         }
@@ -175,7 +176,7 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     public List<BookingResponseDtoForHost> getAllHostBookings(String email) {
-        List<Booking> bookings = repository.findByUserEmail(email);
+        List<Booking> bookings = repository.findByHotelEmail(email);
         if (bookings.isEmpty()) {
             throw new ResourceNotFoundException("No bookings found for the user");
         }
@@ -189,7 +190,7 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     public BookingResponseDtoForHost getHostBooking(Long id, String email) {
-        Optional<Booking> booking = repository.findByIdAndUserEmail(id, email);
+        Optional<Booking> booking = repository.findByIdAndHotelEmail(id, email);
         if (booking.isEmpty()) {
             throw new ResourceNotFoundException("Booking not found");
         }

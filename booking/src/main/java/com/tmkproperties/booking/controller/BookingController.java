@@ -31,12 +31,11 @@ public class BookingController {
 
     @PostMapping("/user")
     public ResponseEntity<ResponseDto> createBooking(@Valid @RequestBody BookingRequestDto bookingRequestDto, @RequestParam String email) {
-       Booking booking = service.createBooking(bookingRequestDto, email);
+       BookingResponseDtoForUser booking = service.createBooking(bookingRequestDto, email);
         kafkaMessageSender.sendMessage("booking", 0, booking.getId().toString(), booking);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ResponseDto(HttpStatus.CREATED, "Booking created successfully" ));
-
 
     }
 

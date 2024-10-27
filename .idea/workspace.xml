@@ -162,9 +162,9 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="Spring Boot.MailServerApplication" />
       <item itemvalue="Spring Boot.EurekaServerApplication" />
       <item itemvalue="Spring Boot.GatewayServerApplication" />
+      <item itemvalue="Spring Boot.MailServerApplication" />
       <item itemvalue="Spring Boot.BookingApplication" />
       <item itemvalue="Spring Boot.HotelApplication" />
     </list>
@@ -194,7 +194,10 @@
       <workItem from="1729686277741" duration="18860000" />
       <workItem from="1729710815331" duration="5249000" />
       <workItem from="1729742982008" duration="8543000" />
-      <workItem from="1729755697600" duration="13179000" />
+      <workItem from="1729755697600" duration="14492000" />
+      <workItem from="1729830710891" duration="16012000" />
+      <workItem from="1729929777840" duration="34000" />
+      <workItem from="1730006911261" duration="10485000" />
     </task>
     <task id="LOCAL-00001" summary="Until role based authorization except for the identifying user role">
       <option name="closed" value="true" />
@@ -204,7 +207,23 @@
       <option name="project" value="LOCAL" />
       <updated>1729707212238</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="kafka + pdf generation in mail server">
+      <option name="closed" value="true" />
+      <created>1729772071297</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1729772071297</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Hotel service code refactor">
+      <option name="closed" value="true" />
+      <created>1729846365939</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1729846365939</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -212,7 +231,9 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Until role based authorization except for the identifying user role" />
-    <option name="LAST_COMMIT_MESSAGE" value="Until role based authorization except for the identifying user role" />
+    <MESSAGE value="kafka + pdf generation in mail server" />
+    <MESSAGE value="Hotel service code refactor" />
+    <option name="LAST_COMMIT_MESSAGE" value="Hotel service code refactor" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

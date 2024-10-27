@@ -1,7 +1,6 @@
 package com.tmkproperties.hotel.entity;
 
 import com.tmkproperties.hotel.constants.HotelType;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.*;
 

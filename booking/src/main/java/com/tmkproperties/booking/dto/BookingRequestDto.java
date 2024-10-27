@@ -25,6 +25,12 @@ import java.time.LocalDate;
 )
 public class BookingRequestDto {
 
+    @Schema(description = "User name", example = "John Doe")
+    @NotNull(message = "User name cannot be null")
+    @Size(min = 2, max = 50, message = "User name must be between 2 and 50 characters")
+    @Pattern(regexp = "^[a-zA-Z ]+$", message = "User name must only contain letters and spaces")
+    private String name;
+
     @Schema(description = "User id", example = "example@gamil.com")
     @NotNull(message = "User id cannot be null")
     @Email(message = "Invalid email format")

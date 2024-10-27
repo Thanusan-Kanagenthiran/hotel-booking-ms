@@ -10,7 +10,7 @@ import java.util.List;
 
 
 public interface IBookingService {
-    Booking createBooking(@Valid BookingRequestDto bookingRequestDto, String email);
+    BookingResponseDtoForUser createBooking(@Valid BookingRequestDto bookingRequestDto, String email);
 
     void changeBookingDates(Long id, UpdateBookingDatesDto updateBookingDatesDto, String email);
 
