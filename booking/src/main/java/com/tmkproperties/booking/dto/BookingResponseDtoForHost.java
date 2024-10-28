@@ -1,6 +1,7 @@
 package com.tmkproperties.booking.dto;
 
 import com.tmkproperties.booking.constants.BookingStatus;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 
@@ -9,6 +10,10 @@ import java.time.LocalDate;
 
 @Data
 @Builder
+@Schema(
+        name = "Booking Response for Host",
+        description = "Schema for booking response for host"
+)
 public class BookingResponseDtoForHost {
     private Long id;
     private Long roomId;

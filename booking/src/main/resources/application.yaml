@@ -57,3 +57,10 @@ resilience4j:
         wait-duration-in-open-state: 10s
         failure-rate-threshold: 50
         register-health-indicator: true
+springdoc:
+  api-docs:
+    path: /api-doc
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true

@@ -11,15 +11,8 @@ import java.time.LocalDateTime;
 @Data @AllArgsConstructor
 @Schema(
         name = "Error Response",
-        description = "Response for invalid request",
-        type = "object",
-        example = """
-                {
-                  "apiPath": "/booking",
-                  "errorCode":40# \
-                  "errorMessage": "Lorem ipsum dolor sit amet",
-                  "errorTime": "2022-01-01T00:00:00"
-                }"""
+        description = "Response for invalid request"
+
 )
 public class ErrorResponseDto {
 
