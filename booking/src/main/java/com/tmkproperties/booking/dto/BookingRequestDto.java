@@ -15,7 +15,8 @@ import java.time.LocalDate;
 @Schema(
         name = "Booking request",
         description = "Schema for booking request",
-        example = "{\n" +
+        example = "{ \n" +
+                "  \"name\": \"John Doe\",\n" +
                 "  \"email\": \"example@gamil.com\",\n" +
                 "  \"mobile\": \"0772433010\",\n" +
                 "  \"roomId\": 1,\n" +
