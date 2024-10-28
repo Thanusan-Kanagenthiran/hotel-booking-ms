@@ -3,13 +3,11 @@ spring:
     name: booking
   profiles:
     active: dev
-
   datasource:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/booking_ms
     username: postgres
     password: 1976
-
   jpa:
     properties:
       hibernate:
@@ -17,15 +15,15 @@ spring:
     show-sql: true
     hibernate:
       ddl-auto: update
-
   cloud:
     openfeign:
       circuitbreaker:
         enabled: true
-
   kafka:
     bootstrap-servers: localhost:9092
 
+server:
+  port: 8080
 management:
   endpoints:
     web:
@@ -57,6 +55,7 @@ resilience4j:
         wait-duration-in-open-state: 10s
         failure-rate-threshold: 50
         register-health-indicator: true
+
 springdoc:
   api-docs:
     path: /api-doc

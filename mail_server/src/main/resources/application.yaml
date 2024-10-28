@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: mail_server
+  kafka:
+    bootstrap-servers: localhost:9092
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+
+server:
+  port: 9000
+
+
+springdoc:
+  api-docs:
+    path: /api-doc
+    enabled: true
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
