@@ -9,7 +9,6 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-
 public class BookingResponseDto {
     private Long id;
     private Long userId;

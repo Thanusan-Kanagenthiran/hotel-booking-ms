@@ -1,6 +1,7 @@
 package com.tmkproperties.hotel.dto;
 
 import com.tmkproperties.hotel.constants.HotelType;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -14,6 +15,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Schema(
+    name = "HotelRequestDto",
+    description = "Request object for creating a new hotel"
+)
 public class HotelRequestDto {
 
     @Enumerated(EnumType.STRING)
