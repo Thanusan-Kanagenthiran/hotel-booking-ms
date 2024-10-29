@@ -33,6 +33,13 @@ public class GatewayServerApplication {
 								.circuitBreaker(config -> config.setName("bookingServiceCircuitBreaker").setFallbackUri("forward:/contact-support"))
 								.addResponseHeader("X-Requested-Time", LocalDateTime.now().toString()))
 						.uri("lb://BOOKING"))
+				.route(p -> p
+						.path("/tmk-properties/mail-server/**")
+						.filters(f -> f
+								.rewritePath("/tmk-properties/mail-server/(?<segment>.*)", "/${segment}")
+								.circuitBreaker(config -> config.setName("mailServiceCircuitBreaker").setFallbackUri("forward:/contact-support"))
+								.addResponseHeader("X-Requested-Time", LocalDateTime.now().toString()))
+						.uri("lb://MAIL_SERVER"))
 				.build();
 	}
 

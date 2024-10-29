@@ -20,14 +20,20 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity serverHttpSecurity) {
         serverHttpSecurity.authorizeExchange(exchanges -> exchanges
-                        .pathMatchers(HttpMethod.GET,"/tmk-properties/hotel/api/v1/hotels").permitAll()
-                        .pathMatchers(HttpMethod.GET,"/tmk-properties/hotel/api/v1/hotels/{id}").permitAll()
-                        .pathMatchers("/tmk-properties/hotel/api/v1/hotels/host").hasRole("HOST")
-                        .pathMatchers(HttpMethod.GET,"/tmk-properties/hotel/api/v1/rooms").permitAll()
-                        .pathMatchers(HttpMethod.GET,"/tmk-properties/hotel/api/v1/rooms/{id}").permitAll()
-                        .pathMatchers("/tmk-properties/hotel/api/v1/rooms/host").hasRole("HOST")
-                        .pathMatchers("/tmk-properties/booking/api/v1/bookings/user").hasRole("USER")
-                        .pathMatchers("/tmk-properties/booking/api/v1/bookings/host").hasRole("HOST"))
+                        .pathMatchers(HttpMethod.GET, "/tmk-properties/hotel/api/v1/hotels", "/tmk-properties/hotel/api/v1/hotels/{id}").permitAll()
+                        .pathMatchers(HttpMethod.GET, "/tmk-properties/hotel/api/v1/hotels/host/**").hasRole("HOST")
+                        .pathMatchers(HttpMethod.POST, "/tmk-properties/hotel/api/v1/hotels/host/**").hasRole("HOST")
+                        .pathMatchers(HttpMethod.GET, "/tmk-properties/hotel/api/v1/rooms", "/tmk-properties/hotel/api/v1/rooms/{id}").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/tmk-properties/hotel/api/v1/rooms/host/**").hasRole("HOST")
+                        .pathMatchers(HttpMethod.POST, "/tmk-properties/booking/api/v1/bookings/host/{id}/**").hasRole("HOST")
+                        .pathMatchers(HttpMethod.GET, "/tmk-properties/booking/api/v1/bookings/host/{id}").hasRole("HOST")
+                        .pathMatchers(HttpMethod.GET, "/tmk-properties/booking/api/v1/bookings/host").hasRole("HOST")
+                        .pathMatchers(HttpMethod.POST, "/tmk-properties/booking/api/v1/bookings/user/{id}/**").hasRole("USER")
+                        .pathMatchers(HttpMethod.GET, "/tmk-properties/booking/api/v1/bookings/user/{id}").hasRole("USER")
+                        .pathMatchers(HttpMethod.PUT, "/tmk-properties/booking/api/v1/bookings/user/{id}").hasRole("USER")
+                        .pathMatchers(HttpMethod.POST, "/tmk-properties/booking/api/v1/bookings/user").hasRole("USER")
+                        .pathMatchers(HttpMethod.GET, "/tmk-properties/booking/api/v1/bookings/user").hasRole("USER")
+                        .anyExchange().authenticated())
                 .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec
                         .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
         serverHttpSecurity.csrf(ServerHttpSecurity.CsrfSpec::disable);
