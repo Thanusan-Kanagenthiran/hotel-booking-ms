@@ -22,9 +22,8 @@ public class KeycloakRoleConverter implements Converter<Jwt, Collection<GrantedA
         if (roles == null || roles.isEmpty()) {
             return new ArrayList<>();
         }
-        Collection<GrantedAuthority> returnValue = roles.stream().map(roleName -> "ROLE_" + roleName)
+        return roles.stream().map(roleName -> "ROLE_" + roleName)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
-        return returnValue;
     }
 }
