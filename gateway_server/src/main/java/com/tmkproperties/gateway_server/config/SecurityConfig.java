@@ -1,5 +1,7 @@
 package com.tmkproperties.gateway_server.config;
 
+import com.tmkproperties.gateway_server.exception.CustomAccessDeniedHandler;
+import com.tmkproperties.gateway_server.exception.CustomBasicAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -35,7 +37,10 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.GET, "/tmk-properties/booking/api/v1/bookings/user").hasRole("USER")
                         .anyExchange().authenticated())
                 .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec
-                        .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
+                        .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor())))
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .accessDeniedHandler(new CustomAccessDeniedHandler())
+                        .authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
         return serverHttpSecurity.build();
     }
 
