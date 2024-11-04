@@ -28,7 +28,7 @@ public class PdfService {
 
         String htmlContent = templateEngine.process("booking-confirmation", context);
 
-        String fileName = booking.getGuestContactEmail().replaceAll(" ", "_") + booking.getId() + ".pdf";
+        String fileName = booking.getId() + ".pdf";
         String filePath = outputDir + fileName;
 
         try (FileOutputStream outputStream = new FileOutputStream(filePath)) {

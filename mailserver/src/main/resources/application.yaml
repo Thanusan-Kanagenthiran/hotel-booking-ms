@@ -1,6 +1,6 @@
 spring:
   application:
-    name: mail_server
+    name: mailserver
   kafka:
     bootstrap-servers: localhost:9092
   thymeleaf:

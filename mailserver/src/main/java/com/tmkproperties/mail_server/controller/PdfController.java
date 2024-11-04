@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.File;
 
 @RestController
-@RequestMapping("/api/pdf")
+@RequestMapping("/api/v1/receipts")
 @Tag(
         name = "Booking Receipts API",
         description = "Operations related to booking receipts"

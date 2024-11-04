@@ -6,9 +6,9 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 @SpringBootApplication
-
 @OpenAPIDefinition(
 		info = @Info(
 				title = "Mail Server API",
@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 				)
 		)
 )
+@EnableFeignClients
 public class MailServerApplication {
 
 	public static void main(String[] args) {

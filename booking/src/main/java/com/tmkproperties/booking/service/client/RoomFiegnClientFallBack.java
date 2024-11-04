@@ -8,6 +8,6 @@
     public class RoomFiegnClientFallBack implements RoomFiegnClient {
         @Override
         public ResponseEntity<RoomResponseDtoWithDetails> findById(Long id) {
-            throw new ResourceNotFoundException("Something went wrong. Please try again later.");
+            throw new ResourceNotFoundException("Something went wrong. Please try again later. " + id);
         }
     }

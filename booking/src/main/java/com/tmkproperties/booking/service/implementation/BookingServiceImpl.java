@@ -11,6 +11,7 @@ import com.tmkproperties.booking.service.IBookingService;
 
 import com.tmkproperties.booking.service.client.RoomFiegnClient;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class BookingServiceImpl implements IBookingService {
@@ -166,8 +168,9 @@ public class BookingServiceImpl implements IBookingService {
         if (booking.isEmpty()) {
             throw new ResourceNotFoundException("Booking not found");
         }
-        RoomResponseDtoWithDetails roomDetails = fetchRoomDetails(id);
-        return BookingMapper.toBookingResponseDtoForUser(booking.get(), roomDetails);
+        RoomResponseDtoWithDetails roomDetails = fetchRoomDetails(booking.get().getRoomId());
+       return BookingMapper.toBookingResponseDtoForUser(booking.get(), roomDetails);
+
     }
 
     @Override
@@ -190,7 +193,7 @@ public class BookingServiceImpl implements IBookingService {
         if (booking.isEmpty()) {
             throw new ResourceNotFoundException("Booking not found");
         }
-        RoomResponseDtoWithDetails roomDetails = fetchRoomDetails(id);
+        RoomResponseDtoWithDetails roomDetails = fetchRoomDetails(booking.get().getRoomId());
         return BookingMapper.toBookingResponseDtoForHost(booking.get(), roomDetails.getId());
     }
 

@@ -2,7 +2,9 @@ package com.tmkproperties.booking.controller;
 
 import com.tmkproperties.booking.config.kafka.KafkaMessageSender;
 import com.tmkproperties.booking.dto.*;
+import com.tmkproperties.booking.exception.ResourceNotFoundException;
 import com.tmkproperties.booking.service.IBookingService;
+import com.tmkproperties.booking.service.client.ReceiptFiegnClient;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,6 +37,7 @@ public class BookingController {
 
     private static final Logger logger = LoggerFactory.getLogger(BookingController.class);
     private final IBookingService service;
+    private final ReceiptFiegnClient receiptFiegnClient;
 
 
     @Autowired
@@ -162,6 +166,7 @@ public class BookingController {
     )
     @GetMapping("/host/{id}")
     public ResponseEntity<BookingResponseDtoForHost> getHostBooking(@PathVariable Long id,@AuthenticationPrincipal Jwt principal){
+        logger.error("Host email: {}", principal.getClaimAsString("sub"));
         String email = principal.getClaimAsString("sub");
         BookingResponseDtoForHost bookings = service.getHostBooking(id, email);
         return ResponseEntity.status(HttpStatus.OK).body(bookings);
@@ -196,7 +201,6 @@ public class BookingController {
             @AuthenticationPrincipal Jwt principal,
             @RequestBody UpdateBookingDatesDto updateBookingDatesDto)
     {
-        logger.error("test");
         String email = principal.getClaimAsString("sub");
         logger.error("Booking dates changed for user: {}, booking id: {}", email, id);
         service.changeBookingDates(id, updateBookingDatesDto, email);
@@ -364,6 +368,26 @@ public class BookingController {
                 .status(HttpStatus.OK)
                 .body(new ResponseDto(HttpStatus.OK, "Booking checked out successfully."));
     }
+
+    @GetMapping("/receipt/{bookingId}")
+    public ResponseEntity<Resource> downloadPdf(@PathVariable Long bookingId, @AuthenticationPrincipal Jwt principal) {
+        BookingResponseDtoForHost booking = null;
+        BookingResponseDtoForUser bookingForUser = null;
+
+        try {
+            booking = service.getHostBooking(bookingId, principal.getClaimAsString("sub"));
+        } catch (Exception e) {
+            bookingForUser = service.getUserBooking(bookingId, principal.getClaimAsString("sub"));
+        }
+
+        if (booking == null && bookingForUser == null) {
+            throw new ResourceNotFoundException("No booking found for the requested user");
+        }
+
+        String fileName = (booking != null ? booking.getId() : bookingForUser.getId()) + ".pdf";
+        return receiptFiegnClient.downloadPdf(fileName);
+    }
+
 
 
 }
