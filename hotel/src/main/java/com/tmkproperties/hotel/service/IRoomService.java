@@ -9,7 +9,9 @@ public interface IRoomService {
 
     List<RoomResponseDto> findAll();
 
-    RoomResponseDtoWithBookings findByIdWithBookings(Long id, String email);
+    RoomResponseDto findByIdWithBookings(Long id, String email);
+
+    List<RoomResponseDto> findAllWithHost(String email);
 
     RoomResponseDtoWithDetails findByIdWithDetails(Long id);
 

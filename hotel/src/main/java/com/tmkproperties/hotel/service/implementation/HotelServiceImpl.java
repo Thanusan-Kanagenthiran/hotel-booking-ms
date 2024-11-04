@@ -5,7 +5,6 @@ import com.tmkproperties.hotel.dto.HotelResponseDto;
 import com.tmkproperties.hotel.entity.Hotel;
 import com.tmkproperties.hotel.exception.ResourceAlreadyExistsException;
 import com.tmkproperties.hotel.exception.ResourceNotFoundException;
-import com.tmkproperties.hotel.exception.UnauthorizedException;
 import com.tmkproperties.hotel.mapper.HotelMapper;
 import com.tmkproperties.hotel.repository.HotelRepository;
 import com.tmkproperties.hotel.service.IHotelService;
@@ -90,33 +89,28 @@ public class HotelServiceImpl implements IHotelService {
     @Override
     public void updateHotel(Long id, HotelRequestDto hotelRequestDto, String email) {
 
-        Hotel existingHotel = repository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Hotel not found.")
-        );
+        Hotel hotel =repository.findByIdAndHotelContactEmail(id,email);
 
-        if (!existingHotel.getHotelName().equals(email)) {
-            throw new UnauthorizedException("Unauthorized access. You cannot modify this hotel.");
+        if (hotel == null) {
+            throw new ResourceNotFoundException("Hotel not belongs to this user. ");
         }
 
         Hotel updatedHotel = HotelMapper.toHotel(hotelRequestDto);
-        updatedHotel.setId(existingHotel.getId());
+        updatedHotel.setId(hotel.getId());
         updatedHotel.setHotelName(email);
         repository.save(updatedHotel);
     }
 
 
-
-
     @Override
     public void deleteHotel(Long id, String email) {
-        Hotel existingHotel = repository.findById(id).orElseThrow(
-                () -> new ResourceNotFoundException("Hotel not found.")
-        );
-        if (!existingHotel.getHotelContactEmail().equals(email)) {
-            throw new UnauthorizedException("Unauthorized access. You cannot modify this hotel.");
+        Hotel hotel =repository.findByIdAndHotelContactEmail(id,email);
+
+        if (hotel == null) {
+            throw new ResourceNotFoundException("Hotel not belongs to this user. ");
         }
 
-        repository.delete(existingHotel);
+        repository.delete(hotel);
     }
 
 }

@@ -12,14 +12,11 @@ import com.tmkproperties.hotel.mapper.RoomMapper;
 import com.tmkproperties.hotel.repository.HotelRepository;
 import com.tmkproperties.hotel.repository.RoomRepository;
 import com.tmkproperties.hotel.service.IRoomService;
-import com.tmkproperties.hotel.service.client.BookingFeignClient;
 import jakarta.validation.ValidationException;
 import jakarta.ws.rs.BadRequestException;
 import lombok.AllArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -31,7 +28,6 @@ public class RoomServiceImpl implements IRoomService {
 
     private  HotelRepository hotelRepository;
     private  RoomRepository roomRepository;
-    private  BookingFeignClient bookingFeignClient;
 
     @Override
     public void createRoom(RoomRequestDto roomRequestDto, String email) {
@@ -70,10 +66,17 @@ public class RoomServiceImpl implements IRoomService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<RoomResponseDto> findAllWithHost(String email) {
+        List<Room> rooms = roomRepository.findAllByHotelHotelContactEmail(email);
+        return rooms.stream()
+                .map(RoomMapper::toRoomResponseDto)
+                .collect(Collectors.toList());
+    }
+
 
     @Override
     public RoomResponseDtoWithDetails findByIdWithDetails(Long id) {
-
         Room room = roomRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Room not found with id: " + id)
         );
@@ -81,22 +84,17 @@ public class RoomServiceImpl implements IRoomService {
     }
 
     @Override
-    public RoomResponseDtoWithBookings findByIdWithBookings(Long id, String email) {
+    public RoomResponseDto findByIdWithBookings(Long id, String email) {
 
         Room room = roomRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Room not found with id: " + id)
         );
 
-        if (room.getHotel().getHotelContactEmail().equals(email)) {
+        if (!room.getHotel().getHotelContactEmail().equals(email)) {
             throw new UnauthorizedException("You are not authorized to view bookings for this room.");
         }
 
-        ResponseEntity<List<BookingResponseDto>> bookingResponseEntity = bookingFeignClient.findBookings(null, room.getId(), null);
-        List<BookingResponseDto> bookings =
-                (bookingResponseEntity != null && bookingResponseEntity.getBody() != null)
-                        ? bookingResponseEntity.getBody()
-                        : new ArrayList<>();
-        return RoomMapper.toRoomResponseDtoWithBookings(room, bookings);
+        return RoomMapper.toRoomResponseDto(room);
     }
 
     @Override

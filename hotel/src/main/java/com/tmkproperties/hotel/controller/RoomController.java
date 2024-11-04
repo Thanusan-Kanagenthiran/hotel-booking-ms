@@ -80,6 +80,30 @@ public class RoomController {
     }
 
     @Operation(
+            summary = "Get all rooms for host",
+            description = "Get all rooms for host. "
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponseDto.class)
+                    )
+            )
+    })
+    @GetMapping("/host")
+    public ResponseEntity<List<RoomResponseDto>> findAllRoomsForHost(@AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
+        List<RoomResponseDto> rooms = service.findAllWithHost(email);
+        return ResponseEntity.status(HttpStatus.OK).body(rooms);
+    }
+
+    @Operation(
             summary = "Add new room",
             description = "Add a room based on the provided details. "
     )
@@ -124,9 +148,9 @@ public class RoomController {
             )
     })
     @GetMapping("host/{id}")
-    public ResponseEntity<RoomResponseDtoWithBookings> findByIdWithBookings(@PathVariable Long id, @AuthenticationPrincipal Jwt principal) {
+    public ResponseEntity<RoomResponseDto> findByIdWithBookings(@PathVariable Long id, @AuthenticationPrincipal Jwt principal) {
         String email = principal.getClaimAsString("sub");
-        RoomResponseDtoWithBookings room = service.findByIdWithBookings(id, email);
+        RoomResponseDto room = service.findByIdWithBookings(id, email);
         return ResponseEntity.status(HttpStatus.OK).body(room);
     }
 

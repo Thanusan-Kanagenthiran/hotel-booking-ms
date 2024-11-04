@@ -10,7 +10,7 @@ spring:
     password: 1976
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
   cloud:
     openfeign:
       circuitbreaker:

@@ -22,19 +22,6 @@ public class RoomMapper {
                 .build();
     }
 
-
-    public static RoomResponseDtoWithBookings toRoomResponseDtoWithBookings(Room room, List<BookingResponseDto> bookings) {
-        return RoomResponseDtoWithBookings.builder()
-                .id(room.getId())
-                .roomType(room.getRoomType())
-                .roomNumber(room.getRoomNumber())
-                .maximumNumberOfGuests(room.getMaximumNumberOfGuests())
-                .pricePerNight(room.getPricePerNight())
-                .bookings(bookings)
-                .build();
-    }
-
-
     public static RoomResponseDtoWithDetails toRoomResponseDtoWithDetail(Room room) {
         return RoomResponseDtoWithDetails.builder()
                 .id(room.getId())
@@ -50,7 +37,6 @@ public class RoomMapper {
                 .build();
     }
 
-
     public static RoomResponseDto toRoomResponseDto(Room room) {
         return RoomResponseDto.builder()
                 .id(room.getId())
@@ -60,6 +46,5 @@ public class RoomMapper {
                 .pricePerNight(room.getPricePerNight())
                 .build();
     }
-
 
 }
