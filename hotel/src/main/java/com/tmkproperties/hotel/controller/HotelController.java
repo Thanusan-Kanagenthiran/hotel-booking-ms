@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -106,7 +108,8 @@ public class HotelController {
             )
     })
     @GetMapping("/host")
-    public ResponseEntity<List<HotelResponseDto>> findAllByEmail(@RequestParam String email) {
+    public ResponseEntity<List<HotelResponseDto>> findAllByEmail(@AuthenticationPrincipal Jwt principal ) {
+        String email = principal.getClaimAsString("sub");
         List<HotelResponseDto> hotels = service.findAllByEmail(email);
         return ResponseEntity.status(HttpStatus.OK).body(hotels);
     }
@@ -136,7 +139,8 @@ public class HotelController {
             )
     })
     @PostMapping("/host")
-    public ResponseEntity<ResponseDto> createHotel(@Valid @RequestBody HotelRequestDto hotelRequestDto, @RequestParam String email) {
+    public ResponseEntity<ResponseDto> createHotel(@Valid @RequestBody HotelRequestDto hotelRequestDto,@AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
         service.createHotel(hotelRequestDto, email);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -162,8 +166,9 @@ public class HotelController {
     }
     )
     @GetMapping("/host/{id}")
-    public ResponseEntity<HotelResponseDto> findByEmailAndId(@PathVariable Long id,@RequestParam String email) {
-       HotelResponseDto hotel = service.findByIdAndEmail(id, email);
+    public ResponseEntity<HotelResponseDto> findByEmailAndId(@PathVariable Long id,@AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
+        HotelResponseDto hotel = service.findByIdAndEmail(id, email);
         return ResponseEntity.status(HttpStatus.OK).body(hotel);
     }
 
@@ -191,7 +196,8 @@ public class HotelController {
     )
     @PutMapping("/host/{id}")
     public ResponseEntity<ResponseDto> updateHotel(
-            @Valid @RequestBody HotelRequestDto hotelRequestDto, @PathVariable Long id, @RequestParam String email) {
+            @Valid @RequestBody HotelRequestDto hotelRequestDto, @PathVariable Long id, @AuthenticationPrincipal Jwt principal  ) {
+        String email = principal.getClaimAsString("sub");
         service.updateHotel(id, hotelRequestDto, email);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -217,7 +223,8 @@ public class HotelController {
     }
     )
     @DeleteMapping("/host/{id}")
-    public ResponseEntity<ResponseDto> deleteHotel(@PathVariable Long id, @RequestParam String email) {
+    public ResponseEntity<ResponseDto> deleteHotel(@PathVariable Long id, @AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
         service.deleteHotel(id, email);
         return ResponseEntity
                 .status(HttpStatus.OK)

@@ -9,9 +9,9 @@ import java.util.Optional;
 
 @Repository
 public interface HotelRepository extends JpaRepository<Hotel, Long> {
-    Optional<Hotel> findByName(String name);
+    Optional<Hotel> findByHotelName(String name);
 
-    List<Hotel> findByEmail(String email);
+    List<Hotel> findByHotelContactEmail(String email);
 
-    Hotel findByIdAndEmail(Long id, String email);
+    Hotel findByIdAndHotelContactEmail(Long id, String email);
 }

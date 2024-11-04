@@ -10,11 +10,17 @@ spring:
     password: 1976
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
   cloud:
     openfeign:
       circuitbreaker:
         enabled: true
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:9200/oauth2/jwks
+
 
 server:
   port: 8090

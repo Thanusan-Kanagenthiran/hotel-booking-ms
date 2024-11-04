@@ -22,19 +22,19 @@ public class Hotel extends BaseEntity {
     private HotelType hotelType;
 
     @Column(unique = true, nullable = false)
-    private String name;
+    private String hotelName;
 
     @Column(nullable = false)
-    private String location;
+    private String hotelLocation;
 
     @Column(nullable = false)
-    private String description;
+    private String hotelDescription;
 
     @Column(nullable = false)
-    private String phone;
+    private String hotelContactPhone;
 
     @Column(nullable = false)
-    private String email;
+    private String hotelContactEmail;
 
     @OneToMany(mappedBy = "hotel", cascade = CascadeType.REMOVE)
     private List<Room> rooms;

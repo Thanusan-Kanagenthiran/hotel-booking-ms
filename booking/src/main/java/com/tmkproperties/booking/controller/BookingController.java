@@ -16,6 +16,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,23 +57,14 @@ public class BookingController {
             )
     }
     )
-    @PostMapping("/user")
-    public ResponseEntity<ResponseDto> createBooking(
-            @Valid @RequestBody BookingRequestDto bookingRequestDto,
-            @RequestParam String email) {
+    @PostMapping(value = "/user", produces = "application/json")
+    public ResponseEntity<BookingResponseDtoForUser> createBooking(
+            @Valid @RequestBody BookingRequestDto bookingRequestDto, @AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
         BookingResponseDtoForUser booking = service.createBooking(bookingRequestDto, email);
 
-        try {
-            kafkaMessageSender.sendMessage("booking", 0, booking.getId().toString(), booking);
-        } catch (Exception e) {
-            logger.error("Failed to send message to Kafka: {}", e.getMessage(), e);
-        }
-
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new ResponseDto(HttpStatus.CREATED, "Booking created successfully"));
+        return ResponseEntity.status(HttpStatus.CREATED).body(booking);
     }
-
 
     @Operation(
             summary = "Get all Bookings of a user",
@@ -92,8 +85,9 @@ public class BookingController {
     }
     )
     @GetMapping("/user")
-    public ResponseEntity<List<BookingResponseDtoForUser>> getAllUserBookings(@RequestParam String email){
-        List<BookingResponseDtoForUser> bookings = service.getAllBookingsByUser(email);
+    public ResponseEntity<List<BookingResponseDtoForUser>> getAllUserBookings(@AuthenticationPrincipal Jwt principal){
+        String userEmail = principal.getClaimAsString("sub");
+        List<BookingResponseDtoForUser> bookings = service.getAllBookingsByUser(userEmail);
         return ResponseEntity.status(HttpStatus.OK).body(bookings);
     }
 
@@ -116,7 +110,8 @@ public class BookingController {
     }
     )
     @GetMapping("/user/{id}")
-    public ResponseEntity<BookingResponseDtoForUser> getUserBooking(@PathVariable Long id,@RequestParam String email){
+    public ResponseEntity<BookingResponseDtoForUser> getUserBooking(@PathVariable Long id,@AuthenticationPrincipal Jwt principal){
+        String email = principal.getClaimAsString("sub");
         BookingResponseDtoForUser bookings = service.getUserBooking(id, email);
         return ResponseEntity.status(HttpStatus.OK).body(bookings);
     }
@@ -140,7 +135,8 @@ public class BookingController {
     }
     )
     @GetMapping("/host")
-    public ResponseEntity<List<BookingResponseDtoForHost>> getAllHostBookings(@RequestParam String email){
+    public ResponseEntity<List<BookingResponseDtoForHost>> getAllHostBookings(@AuthenticationPrincipal Jwt principal){
+        String email = principal.getClaimAsString("sub");
         List<BookingResponseDtoForHost> bookings = service.getAllHostBookings(email);
         return ResponseEntity.status(HttpStatus.OK).body(bookings);
     }
@@ -165,7 +161,8 @@ public class BookingController {
     }
     )
     @GetMapping("/host/{id}")
-    public ResponseEntity<BookingResponseDtoForHost> getHostBooking(@PathVariable Long id,@RequestParam String email){
+    public ResponseEntity<BookingResponseDtoForHost> getHostBooking(@PathVariable Long id,@AuthenticationPrincipal Jwt principal){
+        String email = principal.getClaimAsString("sub");
         BookingResponseDtoForHost bookings = service.getHostBooking(id, email);
         return ResponseEntity.status(HttpStatus.OK).body(bookings);
     }
@@ -196,9 +193,12 @@ public class BookingController {
     @PutMapping("/user/{id}")
     public ResponseEntity<ResponseDto> changeBookingDates(
             @PathVariable Long id,
-            @RequestParam String email,
+            @AuthenticationPrincipal Jwt principal,
             @RequestBody UpdateBookingDatesDto updateBookingDatesDto)
     {
+        logger.error("test");
+        String email = principal.getClaimAsString("sub");
+        logger.error("Booking dates changed for user: {}, booking id: {}", email, id);
         service.changeBookingDates(id, updateBookingDatesDto, email);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -228,7 +228,8 @@ public class BookingController {
     }
     )
     @PostMapping("/user/{id}/cancel")
-    public ResponseEntity<ResponseDto> cancelBooking(@PathVariable Long id, @RequestParam String email) {
+    public ResponseEntity<ResponseDto> cancelBooking(@PathVariable Long id, @AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
         service.cancelBooking(id, email);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -258,8 +259,12 @@ public class BookingController {
     }
     )
     @PostMapping("/host/{id}/approve")
-    public ResponseEntity<ResponseDto> approveBooking(@PathVariable Long id, @RequestParam String email) {
-        service.approveBooking(id, email);
+    public ResponseEntity<ResponseDto> approveBooking(@PathVariable Long id, @AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
+        BookingResponseDtoForUser booking = service.approveBooking(id, email);
+
+        kafkaMessageSender.sendMessage("booking", 0, booking.getId().toString(), booking);
+
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(new ResponseDto(HttpStatus.OK, "Booking approved successfully."));
@@ -288,7 +293,8 @@ public class BookingController {
     }
     )
     @PostMapping("/host/{id}/reject")
-    public ResponseEntity<ResponseDto> rejectBooking(@PathVariable Long id, @RequestParam String email) {
+    public ResponseEntity<ResponseDto> rejectBooking(@PathVariable Long id, @AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
         service.rejectBooking(id, email);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -319,7 +325,8 @@ public class BookingController {
     }
     )
     @PostMapping("/host/{id}/checkin")
-    public ResponseEntity<ResponseDto> checkInBooking(@PathVariable Long id, @RequestParam String email) {
+    public ResponseEntity<ResponseDto> checkInBooking(@PathVariable Long id, @AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
         service.checkInBooking(id, email);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -350,7 +357,8 @@ public class BookingController {
     }
     )
     @PostMapping("/host/{id}/checkout")
-    public ResponseEntity<ResponseDto> checkOutBooking(@PathVariable Long id, @RequestParam String email) {
+    public ResponseEntity<ResponseDto> checkOutBooking(@PathVariable Long id, @AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
         service.checkOutBooking(id, email);
         return ResponseEntity
                 .status(HttpStatus.OK)

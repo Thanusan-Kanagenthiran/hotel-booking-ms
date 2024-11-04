@@ -42,11 +42,11 @@ public class RoomMapper {
                 .roomNumber(room.getRoomNumber())
                 .maximumNumberOfGuests(room.getMaximumNumberOfGuests())
                 .pricePerNight(room.getPricePerNight())
-                .email(room.getHotel().getEmail())
-                .phone(room.getHotel().getPhone())
+                .email(room.getHotel().getHotelContactEmail())
+                .phone(room.getHotel().getHotelContactPhone())
                 .hotelType(room.getHotel().getHotelType())
-                .hotelName(room.getHotel().getName())
-                .location(room.getHotel().getLocation())
+                .hotelName(room.getHotel().getHotelName())
+                .location(room.getHotel().getHotelLocation())
                 .build();
     }
 

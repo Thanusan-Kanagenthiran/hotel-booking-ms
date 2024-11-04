@@ -30,14 +30,5 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByRoomId(Long roomId);
 
-    @Modifying
-    @Transactional
-    @Query("UPDATE Booking b SET b.checkIn = :checkIn, b.checkOut = :checkOut, b.amount = :amount WHERE b.id = :id")
-    void updateBookingDates(@Param("id") Long id,
-                            @Param("checkIn") LocalDate checkIn,
-                            @Param("checkOut") LocalDate checkOut,
-                            @Param("amount") BigDecimal amount);
-
-
     Optional<Booking> findByIdAndHotelEmail(Long id, String email);
 }

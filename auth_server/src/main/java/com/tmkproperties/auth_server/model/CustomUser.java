@@ -23,8 +23,10 @@ public class CustomUser {
 
     private String name;
 
+    @Column(unique = true)
     private String email;
 
+    @Column(unique = true)
     private String mobileNumber;
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)

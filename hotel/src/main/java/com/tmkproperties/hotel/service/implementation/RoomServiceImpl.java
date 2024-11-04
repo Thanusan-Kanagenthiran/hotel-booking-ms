@@ -1,5 +1,7 @@
 package com.tmkproperties.hotel.service.implementation;
 
+import com.tmkproperties.hotel.constants.HotelType;
+import com.tmkproperties.hotel.constants.RoomType;
 import com.tmkproperties.hotel.dto.*;
 import com.tmkproperties.hotel.entity.Hotel;
 import com.tmkproperties.hotel.entity.Room;
@@ -11,12 +13,14 @@ import com.tmkproperties.hotel.repository.HotelRepository;
 import com.tmkproperties.hotel.repository.RoomRepository;
 import com.tmkproperties.hotel.service.IRoomService;
 import com.tmkproperties.hotel.service.client.BookingFeignClient;
+import jakarta.validation.ValidationException;
 import jakarta.ws.rs.BadRequestException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -36,14 +40,21 @@ public class RoomServiceImpl implements IRoomService {
                 () -> new ResourceNotFoundException("Hotel not found with requested id: " + roomRequestDto.getHotelId())
         );
 
-        if(!hotel.getEmail().equals(email)) {
+        if(!hotel.getHotelContactEmail().equals(email)) {
             throw new UnauthorizedException("You are not authorized to create room for this hotel");
+        }
+
+        if (roomRequestDto.getRoomType() == null ||
+                !(roomRequestDto.getRoomType() == RoomType.DOUBLE ||
+                        roomRequestDto.getRoomType() == RoomType.SINGLE ||
+                        roomRequestDto.getRoomType() == RoomType.FAMILY )) {
+            throw new ValidationException("Invalid hotel type. Allowed types are: " + Arrays.toString(HotelType.values()));
         }
 
         Optional<Room> existingRoom = roomRepository.findByHotelAndRoomNumber(hotel, roomRequestDto.getRoomNumber());
 
         if (existingRoom.isPresent()) {
-            throw new ResourceAlreadyExistsException("Room already exists with number: " + roomRequestDto.getRoomNumber() + " in hotel: " + hotel.getName());
+            throw new ResourceAlreadyExistsException("Room already exists with number: " + roomRequestDto.getRoomNumber() + " in hotel: " + hotel.getHotelName());
         }
 
         Room room = RoomMapper.toRoom(roomRequestDto);
@@ -54,11 +65,6 @@ public class RoomServiceImpl implements IRoomService {
     @Override
     public List<RoomResponseDto> findAll() {
         List<Room> rooms = roomRepository.findAll();
-
-        if (rooms.isEmpty()) {
-            throw new ResourceNotFoundException("No rooms found.");
-        }
-
         return rooms.stream()
                 .map(RoomMapper::toRoomResponseDto)
                 .collect(Collectors.toList());
@@ -81,7 +87,7 @@ public class RoomServiceImpl implements IRoomService {
                 () -> new ResourceNotFoundException("Room not found with id: " + id)
         );
 
-        if (room.getHotel().getEmail().equals(email)) {
+        if (room.getHotel().getHotelContactEmail().equals(email)) {
             throw new UnauthorizedException("You are not authorized to view bookings for this room.");
         }
 
@@ -100,7 +106,7 @@ public class RoomServiceImpl implements IRoomService {
                 () -> new ResourceNotFoundException("Room not found with id: " + id)
         );
 
-        if (!existingRoom.getHotel().getEmail().equals(email)) {
+        if (!existingRoom.getHotel().getHotelContactEmail().equals(email)) {
             throw new UnauthorizedException("You are not authorized to update this room.");
         }
 
@@ -119,7 +125,7 @@ public class RoomServiceImpl implements IRoomService {
                 () -> new ResourceNotFoundException("Room not found with id: " + id)
         );
 
-        if (!room.getHotel().getEmail().equals(email)) {
+        if (!room.getHotel().getHotelContactEmail().equals(email)) {
             throw new UnauthorizedException("You are not authorized to delete this room.");
         }
 

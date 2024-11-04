@@ -10,7 +10,6 @@ import com.tmkproperties.booking.repository.BookingRepository;
 import com.tmkproperties.booking.service.IBookingService;
 
 import com.tmkproperties.booking.service.client.RoomFiegnClient;
-import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -51,29 +50,26 @@ public class BookingServiceImpl implements IBookingService {
 
 
     @Override
-    @Transactional
     public void changeBookingDates(Long id, UpdateBookingDatesDto updateBookingDatesDto, String email) {
-        Optional<Booking> booking = repository.findByIdAndGuestEmail(id, email);
-        if (booking.isEmpty()) {
-            throw new ResourceNotFoundException("Booking not found");
-        }
 
-        if(!booking.get().getStatus().equals(BookingStatus.PENDING )) {
+        Booking booking = repository.findByIdAndGuestEmail(id, email)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found for ID: " + id + " and email: " + email));
+
+        if (!booking.getStatus().equals(BookingStatus.PENDING)) {
             throw new BadRequestException("Booking can be updated only in pending state");
         }
-        int numberOfDays = validateCheckInOutDates(updateBookingDatesDto.getCheckIn(), updateBookingDatesDto.getCheckOut());
 
-        checkRoomAvailability(id, updateBookingDatesDto.getCheckIn(), updateBookingDatesDto.getCheckOut());
+        int numberOfDays = validateCheckInOutDates(updateBookingDatesDto.getCheckIn(), updateBookingDatesDto.getCheckOut());
+        checkRoomAvailabilityForUpdate(id, updateBookingDatesDto.getCheckIn(), updateBookingDatesDto.getCheckOut(),booking.getId());
 
         RoomResponseDtoWithDetails roomResponse = fetchRoomDetails(id);
         BigDecimal amount = calculateBookingAmount(roomResponse.getPricePerNight(), numberOfDays);
 
-        repository.updateBookingDates(
-                id,
-                updateBookingDatesDto.getCheckIn(),
-                updateBookingDatesDto.getCheckOut(),
-                amount
-        );
+        booking.setCheckIn(updateBookingDatesDto.getCheckIn());
+        booking.setCheckOut(updateBookingDatesDto.getCheckOut());
+        booking.setAmount(amount);
+
+        repository.save(booking);
     }
 
     @Override
@@ -92,19 +88,19 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
-    public void approveBooking(Long id, String email) {
-        Optional<Booking> booking = repository.findByIdAndHotelEmail(id, email);
+    public BookingResponseDtoForUser approveBooking(Long id, String email) {
+        Booking booking = repository.findByIdAndHotelEmail(id, email)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
-        if (booking.isEmpty()) {
-            throw new ResourceNotFoundException("Booking not found");
-        }
-
-        if (!booking.get().getStatus().equals(BookingStatus.PENDING)) {
-            throw new BadRequestException("Booking already approved");
+        if (!booking.getStatus().equals(BookingStatus.PENDING)) {
+            throw new BadRequestException("Booking cannot be approved as it is already " + booking.getStatus());
         }
 
         repository.updateBookingStatus(id, BookingStatus.CONFIRMED);
+        RoomResponseDtoWithDetails roomDetails = fetchRoomDetails(booking.getRoomId());
+        return BookingMapper.toBookingResponseDtoForUser(booking, roomDetails);
     }
+
 
     @Override
     public void rejectBooking(Long id, String email) {
@@ -223,6 +219,24 @@ public class BookingServiceImpl implements IBookingService {
             }
         }
     }
+
+    public void checkRoomAvailabilityForUpdate(Long roomId, LocalDate checkin, LocalDate checkout, Long currentBookingId) {
+        List<Booking> existingBookings = repository.findByRoomId(roomId);
+
+        for (Booking booking : existingBookings) {
+            if (booking.getId().equals(currentBookingId)) {
+                continue;
+            }
+
+            if (!booking.getStatus().equals(BookingStatus.REJECTED)) {
+                if (checkin.isBefore(booking.getCheckOut()) &&
+                        checkout.isAfter(booking.getCheckIn())) {
+                    throw new ResourceNotFoundException("Room is already booked for the selected dates");
+                }
+            }
+        }
+    }
+
 
     private RoomResponseDtoWithDetails fetchRoomDetails(Long roomId) {
         ResponseEntity<RoomResponseDtoWithDetails> responseEntity = roomFeignClient.findById(roomId);

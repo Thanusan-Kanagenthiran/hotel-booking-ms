@@ -11,10 +11,10 @@ import java.util.List;
 public class HotelResponseDto {
     private Long id;
     private HotelType hotelType;
-    private String name;
-    private String location;
-    private String description;
-    private String phone;
-    private String email;
+    private String hotelName;
+    private String hotelLocation;
+    private String hotelDescription;
+    private String hotelContactPhone;
+    private String hotelContactEmail;
     private List<RoomResponseDto> rooms;
 }

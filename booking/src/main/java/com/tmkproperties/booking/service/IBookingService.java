@@ -16,7 +16,7 @@ public interface IBookingService {
 
     void cancelBooking(Long id, String email);
 
-    void approveBooking(Long id, String email);
+    BookingResponseDtoForUser approveBooking(Long id, String email);
 
     void rejectBooking(Long id, String email);
 

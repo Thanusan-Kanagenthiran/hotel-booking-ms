@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -95,7 +97,8 @@ public class RoomController {
             )
     })
     @PostMapping("/host")
-    public ResponseEntity<ResponseDto> createRoom(@Valid @RequestBody RoomRequestDto roomRequestDto, @RequestParam String email) {
+    public ResponseEntity<ResponseDto> createRoom(@Valid @RequestBody RoomRequestDto roomRequestDto, @AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
         service.createRoom(roomRequestDto, email);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -121,7 +124,8 @@ public class RoomController {
             )
     })
     @GetMapping("host/{id}")
-    public ResponseEntity<RoomResponseDtoWithBookings> findByIdWithBookings(@PathVariable Long id, @RequestParam String email) {
+    public ResponseEntity<RoomResponseDtoWithBookings> findByIdWithBookings(@PathVariable Long id, @AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
         RoomResponseDtoWithBookings room = service.findByIdWithBookings(id, email);
         return ResponseEntity.status(HttpStatus.OK).body(room);
     }
@@ -149,7 +153,8 @@ public class RoomController {
             )
     })
     @PutMapping("/host/{id}")
-    public ResponseEntity<ResponseDto> updateRoom(@Valid @RequestBody RoomRequestDto roomRequestDto, @PathVariable Long id, @RequestParam String email) {
+    public ResponseEntity<ResponseDto> updateRoom(@Valid @RequestBody RoomRequestDto roomRequestDto, @PathVariable Long id, @AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
         service.updateRoom(id, roomRequestDto, email);
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -173,7 +178,8 @@ public class RoomController {
                             schema = @Schema(implementation = ErrorResponseDto.class)
     ))})
     @DeleteMapping("/host/{id}")
-    public ResponseEntity<ResponseDto> deleteRoom(@PathVariable Long id, @RequestParam String email) {
+    public ResponseEntity<ResponseDto> deleteRoom(@PathVariable Long id, @AuthenticationPrincipal Jwt principal) {
+        String email = principal.getClaimAsString("sub");
         service.deleteRoom(id, email);
         return ResponseEntity
                 .status(HttpStatus.OK)

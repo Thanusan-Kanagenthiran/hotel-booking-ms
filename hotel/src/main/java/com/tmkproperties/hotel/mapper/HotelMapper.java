@@ -14,12 +14,12 @@ public class HotelMapper {
 
     public static Hotel toHotel(HotelRequestDto hotelRequestDto) {
         return Hotel.builder()
-                .name(hotelRequestDto.getName())
-                .location(hotelRequestDto.getLocation())
-                .description(hotelRequestDto.getDescription())
+                .hotelName(hotelRequestDto.getHotelName())
+                .hotelDescription(hotelRequestDto.getHotelDescription())
+                .hotelLocation(hotelRequestDto.getHotelLocation())
+                .hotelContactEmail(hotelRequestDto.getHotelContactEmail())
+                .hotelContactPhone(hotelRequestDto.getHotelContactPhone())
                 .hotelType(hotelRequestDto.getHotelType())
-                .email(hotelRequestDto.getEmail())
-                .phone(hotelRequestDto.getPhone())
                 .build();
     }
 
@@ -32,11 +32,11 @@ public class HotelMapper {
         return HotelResponseDto.builder()
                 .id(hotel.getId())
                 .hotelType(hotel.getHotelType())
-                .name(hotel.getName())
-                .location(hotel.getLocation())
-                .description(hotel.getDescription())
-                .phone(hotel.getPhone())
-                .email(hotel.getEmail())
+                .hotelName(hotel.getHotelName())
+                .hotelLocation(hotel.getHotelLocation())
+                .hotelDescription(hotel.getHotelDescription())
+                .hotelContactEmail(hotel.getHotelContactEmail())
+                .hotelContactPhone(hotel.getHotelContactPhone())
                 .rooms(roomResponseDtos)
                 .build();
     }

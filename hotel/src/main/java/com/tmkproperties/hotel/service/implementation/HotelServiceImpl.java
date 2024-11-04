@@ -1,4 +1,5 @@
 package com.tmkproperties.hotel.service.implementation;
+import com.tmkproperties.hotel.constants.HotelType;
 import com.tmkproperties.hotel.dto.HotelRequestDto;
 import com.tmkproperties.hotel.dto.HotelResponseDto;
 import com.tmkproperties.hotel.entity.Hotel;
@@ -8,9 +9,11 @@ import com.tmkproperties.hotel.exception.UnauthorizedException;
 import com.tmkproperties.hotel.mapper.HotelMapper;
 import com.tmkproperties.hotel.repository.HotelRepository;
 import com.tmkproperties.hotel.service.IHotelService;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,14 +26,23 @@ public class HotelServiceImpl implements IHotelService {
 
     @Override
     public void createHotel(HotelRequestDto hotelRequestDto, String email) {
-        Optional<Hotel> existingHotel = repository.findByName(hotelRequestDto.getName());
+        Optional<Hotel> existingHotel = repository.findByHotelName(hotelRequestDto.getHotelName());
 
         if (existingHotel.isPresent()) {
-            throw new ResourceAlreadyExistsException("Hotel with name " + hotelRequestDto.getName() + " already exists.");
+            throw new ResourceAlreadyExistsException("Hotel with name " + hotelRequestDto.getHotelName() + " already exists.");
         }
 
-        if(!hotelRequestDto.getEmail().equals(email)) {
+        if(!hotelRequestDto.getHotelContactEmail().equals(email)) {
             throw new  ResourceNotFoundException("Email mismatch. Please provide your email.");
+        }
+
+        if (hotelRequestDto.getHotelType() == null ||
+                !(hotelRequestDto.getHotelType() == HotelType.LUXURY ||
+                        hotelRequestDto.getHotelType() == HotelType.BOUTIQUE ||
+                        hotelRequestDto.getHotelType() == HotelType.RESORT ||
+                        hotelRequestDto.getHotelType() == HotelType.HOME_STAY)) {
+
+            throw new ValidationException("Invalid hotel type. Allowed types are: " + Arrays.toString(HotelType.values()));
         }
 
         Hotel hotel = HotelMapper.toHotel(hotelRequestDto);
@@ -40,12 +52,7 @@ public class HotelServiceImpl implements IHotelService {
 
     @Override
     public List<HotelResponseDto> findAll() {
-
         List<Hotel> hotels = repository.findAll();
-
-        if (hotels.isEmpty()) {
-            throw new ResourceNotFoundException("No hotels found.");
-        }
         return hotels.stream()
                 .map(HotelMapper::toHotelResponseDto)
                 .collect(Collectors.toList());
@@ -53,10 +60,7 @@ public class HotelServiceImpl implements IHotelService {
 
     @Override
     public List<HotelResponseDto> findAllByEmail(String email) {
-        List<Hotel> hotels =repository.findByEmail(email);
-        if (hotels.isEmpty()) {
-            throw new ResourceNotFoundException("No hotels found for this user.");
-        }
+        List<Hotel> hotels =repository.findByHotelContactEmail(email);
         return hotels.stream()
                 .map(HotelMapper::toHotelResponseDto)
                 .collect(Collectors.toList());
@@ -73,7 +77,7 @@ public class HotelServiceImpl implements IHotelService {
 
     @Override
     public HotelResponseDto findByIdAndEmail(Long id, String email) {
-        Hotel hotel =repository.findByIdAndEmail(id,email);
+        Hotel hotel =repository.findByIdAndHotelContactEmail(id,email);
 
         if (hotel == null) {
             throw new ResourceNotFoundException("Hotel not belongs to this user. ");
@@ -90,13 +94,13 @@ public class HotelServiceImpl implements IHotelService {
                 () -> new ResourceNotFoundException("Hotel not found.")
         );
 
-        if (!existingHotel.getEmail().equals(email)) {
+        if (!existingHotel.getHotelName().equals(email)) {
             throw new UnauthorizedException("Unauthorized access. You cannot modify this hotel.");
         }
 
         Hotel updatedHotel = HotelMapper.toHotel(hotelRequestDto);
         updatedHotel.setId(existingHotel.getId());
-        updatedHotel.setEmail(email);
+        updatedHotel.setHotelName(email);
         repository.save(updatedHotel);
     }
 
@@ -108,7 +112,7 @@ public class HotelServiceImpl implements IHotelService {
         Hotel existingHotel = repository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Hotel not found.")
         );
-        if (!existingHotel.getEmail().equals(email)) {
+        if (!existingHotel.getHotelContactEmail().equals(email)) {
             throw new UnauthorizedException("Unauthorized access. You cannot modify this hotel.");
         }
 
