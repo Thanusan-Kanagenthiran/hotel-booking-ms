@@ -1,26 +1,18 @@
 spring:
   application:
-    name: booking
-  profiles:
-    active: default
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/booking_ms
-    username: postgres
-    password: 1976
-  jpa:
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-    show-sql: true
-    hibernate:
-      ddl-auto: update
+    name: gatewayserver
   cloud:
-    openfeign:
-      circuitbreaker:
-        enabled: true
-  kafka:
-    bootstrap-servers: localhost:9092
+    gateway:
+      discovery:
+        locator:
+          enabled: false
+          lower-case-service-id: true
+      httpclient:
+        connect-timeout: 1000
+        response-timeout: 10s
+      filter:
+        circuit-breaker:
+          enabled: true
   security:
     oauth2:
       resourceserver:
@@ -28,13 +20,16 @@ spring:
           jwk-set-uri: http://localhost:9200/oauth2/jwks
 
 server:
-  port: 8080
+  port: 8082
 
 management:
   endpoints:
     web:
       exposure:
         include: health, info, metrics, prometheus
+  endpoint:
+    gateway:
+      enabled: true
   metrics:
     distribution:
       percentiles-histogram:
@@ -43,7 +38,7 @@ management:
             requests: true
   observations:
     key-values:
-      application: booking
+      application: gatewayserver
   tracing:
     sampling:
       probability: 1.0
@@ -61,8 +56,8 @@ eureka:
 
 info:
   app:
-    name: booking
-    description: booking
+    name: gateway
+    description: gateway server for hotel management system
     version: 1.0.0
 
 resilience4j:
@@ -75,10 +70,6 @@ resilience4j:
         failure-rate-threshold: 50
         register-health-indicator: true
 
-springdoc:
-  api-docs:
-    path: /api-doc
-    enabled: true
-  swagger-ui:
-    path: /swagger-ui.html
-    enabled: true
+
+
+
