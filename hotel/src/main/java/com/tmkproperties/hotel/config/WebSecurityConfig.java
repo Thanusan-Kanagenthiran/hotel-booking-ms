@@ -24,7 +24,6 @@ public class WebSecurityConfig {
                         .requestMatchers(HttpMethod.GET,"api/v1/hotels/{id}").permitAll()
                         .requestMatchers(HttpMethod.GET,"api/v1/rooms").permitAll()
                         .requestMatchers(HttpMethod.GET,"api/v1/rooms/{id}").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
         .oauth2ResourceServer(rsc -> rsc.jwt(jwtConfigurer ->
